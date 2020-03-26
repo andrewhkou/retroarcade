@@ -3,5 +3,6 @@ Features classic arcade games such as snake, pac-man, and pong. Also contains a 
 
 Contributors:
 Alexander Yu
+Andre Wang
 
 ----------
