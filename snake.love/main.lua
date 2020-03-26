@@ -2,10 +2,7 @@ function love.load()
     screenDimX = 1280;
     screenDimY = 720;
     blockSize = 20;
-    mainMenu = true;
-    gameOver = false;
-    twoPlayer = false;
-    singlePlayer = false;
+    totalTimeElapsed = 0;
 
     love.window.setTitle("Snake");
     love.window.setMode(screenDimX, screenDimY)
@@ -30,14 +27,20 @@ function love.load()
         };
         snake2 = {
             {x = screenDimX - blockSize, y = 0},
-            {x = screenDimX - blockSize, y = blockSize},
             {x = screenDimX - blockSize, y = 2 * blockSize},
-            {x = screenDimX - blockSize, y = 3 * blockSize},
             {x = screenDimX - blockSize, y = 4 * blockSize},
+            {x = screenDimX - blockSize, y = 6 * blockSize},
+            {x = screenDimX - blockSize, y = 8 * blockSize},
         };
-        direction1 = 3;
-        direction2 = 3;
-        speed = 1;
+        direction1 = 1;
+        direction2 = 1;
+        speed = 2 * blockSize;
+        mainMenu = true;
+        gameOver = false;
+        twoPlayer = false;
+        singlePlayer = false;
+        timeElapsed = 0;
+        timeLimit = .1;
     end
         
     function keyboardPlayer1()
@@ -92,16 +95,24 @@ function love.load()
         table.remove(snake1);
     end
 
+    function collisionSingle() 
+        for i = 2, #snake1 do
+            xBoolean = math.abs(snake1[i].x - snake1[1].x) < blockSize;
+            yBoolean = math.abs(snake1[i].y - snake1[1].y) < blockSize;
+            if (xBoolean and yBoolean) then
+                return true;
+            end
+        end
+        return false;
+    end
+
     function collision(player1Snake, player2Snake)
-        for i in pairs(player1Snake) do
-            for j in pairs(player2Snake) do
-                xBoolean = math.abs(player1Snake[i].x - player2Snake[j].x) <= 5;
-                yBoolean = math.abs(player1Snake[i].y - player2Snake[j].y) <= 5;
-                if (xBoolean or yBoolean) then
-                    if (i == j and player1Snake == player2Snake) then
-                    else
-                        return true;
-                    end
+        for a, i in ipairs(player1Snake) do
+            for b, j in ipairs(player2Snake) do
+                xBoolean = i.x == j.x;
+                yBoolean = i.y == j.y; 
+                if (xBoolean and yBoolean) then
+                    return true;
                 end
             end
         end
@@ -112,28 +123,36 @@ function love.load()
 end
 
 function love.update(dt)
-    if (mainMenu) then
-        mainMenuOptions()
-    elseif (singlePlayer) then
-        keyboardPlayer1();
-        updateSnake1();
-        --if (collision(snake1, snake1)) then
-          --  singlePlayer = false;
-            --gameOver = true;
-        --end
-    elseif (twoPlayer) then
-    elseif (gameover) then
-        print("game over");
-        if (love.keyboard.isDown("space")) then
-            singlePlayer = true;
-            gameOver = false;
-        end
+    timeElapsed = timeElapsed + dt;
+    totalTimeElapsed = totalTimeElapsed + dt;
+    if (math.fmod(totalTimeElapsed, 50) == 0) then
+        timeLimit = timeLimit -.01;
+    end
+    if (collisionSingle()) then
+        singlePlayer = false;
+        gameOver = true;
     end
 
+    if (timeElapsed > timeLimit) then
+        if (mainMenu) then
+            mainMenuOptions()
+        elseif (singlePlayer) then
+            keyboardPlayer1();
+            updateSnake1();
+        elseif (twoPlayer) then
+        elseif (gameover) then
+            print("game over");
+            if (love.keyboard.isDown(1)) then
+                singlePlayer = true;
+                gameOver = false;
+            end
+        end
+        timeElapsed = 0;
+    end
 end
 
 function love.draw()
-
+    collisionSingle();
     if (mainMenu) then
         love.graphics.setColor(.36, 0, 0);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
@@ -147,6 +166,8 @@ function love.draw()
         end
     elseif (twoPlayer) then
     elseif (gameOver) then
+        love.graphics.setColor(.5, 0, 1);
+        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
     end
 end
 
