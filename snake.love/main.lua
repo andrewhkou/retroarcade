@@ -3,7 +3,8 @@ function love.load()
     screenDimY = 720;
     blockSize = 20;
     totalTimeElapsed = 0;
-
+    highScore = 0;
+    score = 0;
     love.window.setTitle("Snake");
     love.window.setMode(screenDimX, screenDimY)
 
@@ -17,13 +18,20 @@ function love.load()
         end
     end
 
+    function gameOverMenu()
+        if (love.keyboard.isDown("space")) then
+            newGame();
+        end
+    end
+
     function newGame()
+        score = 0;
         snake1 = {
             {x = 0, y = 0},
+            {x = 0, y = (1 * blockSize)},
             {x = 0, y = (2 * blockSize)},
+            {x = 0, y = (3 * blockSize)},
             {x = 0, y = (4 * blockSize)},
-            {x = 0, y = (6 * blockSize)},
-            {x = 0, y = (8 * blockSize)},
         };
         snake2 = {
             {x = screenDimX - blockSize, y = 0},
@@ -32,17 +40,33 @@ function love.load()
             {x = screenDimX - blockSize, y = 6 * blockSize},
             {x = screenDimX - blockSize, y = 8 * blockSize},
         };
-        direction1 = 1;
-        direction2 = 1;
-        speed = 2 * blockSize;
+        direction1 = 3;
+        direction2 = 3;
+        speed = blockSize;
         mainMenu = true;
         gameOver = false;
         twoPlayer = false;
         singlePlayer = false;
         timeElapsed = 0;
         timeLimit = .1;
+        numBlocksX = screenDimX / blockSize;
+        numBlocksY = screenDimY / blockSize;
+        foodX = math.random(1, numBlocksX - 1) * blockSize;
+        foodY = math.random(1, numBlocksY - 1) * blockSize;
     end
-        
+
+    function eatenFood(snakeBody) 
+        if (snakeBody[1].x == foodX and snakeBody[1].y == foodY) then
+            foodX = math.random(1,numBlocksX -1) * blockSize;
+            foodY = math.random(1,numBlocksY -1) * blockSize;
+            score = score + 1;
+            highScore = math.max(score, highScore);
+            return true;
+        else
+            return false;
+        end
+    end
+ 
     function keyboardPlayer1()
         if (love.keyboard.isDown("w")) then
             if (direction1 ~= 1) then 
@@ -92,14 +116,18 @@ function love.load()
             end
             table.insert(snake1, 1, {x = newX, y = currY});
         end
-        table.remove(snake1);
+        if (not eatenFood(snake1)) then
+            table.remove(snake1);
+        end
     end
 
     function collisionSingle() 
-        for i = 2, #snake1 do
-            xBoolean = math.abs(snake1[i].x - snake1[1].x) < blockSize;
-            yBoolean = math.abs(snake1[i].y - snake1[1].y) < blockSize;
-            if (xBoolean and yBoolean) then
+        local nextX = snake1[1].x;
+        local nextY = snake1[1].y;
+        for index, place in ipairs(snake1) do
+            xBoolean = place.x == nextX;
+            yBoolean = place.y == nextY;
+            if (xBoolean and yBoolean and index ~= 1) then
                 return true;
             end
         end
@@ -124,42 +152,45 @@ end
 
 function love.update(dt)
     timeElapsed = timeElapsed + dt;
-    totalTimeElapsed = totalTimeElapsed + dt;
-    if (math.fmod(totalTimeElapsed, 50) == 0) then
+    totalTimeElapsed = totalTimeElapsed + 1;
+    if (math.fmod(totalTimeElapsed, 1000) == 0) then
         timeLimit = timeLimit -.01;
     end
-    if (collisionSingle()) then
-        singlePlayer = false;
-        gameOver = true;
-    end
-
-    if (timeElapsed > timeLimit) then
-        if (mainMenu) then
-            mainMenuOptions()
-        elseif (singlePlayer) then
-            keyboardPlayer1();
-            updateSnake1();
-        elseif (twoPlayer) then
-        elseif (gameover) then
-            print("game over");
-            if (love.keyboard.isDown(1)) then
-                singlePlayer = true;
-                gameOver = false;
-            end
+    
+    if (mainMenu) then
+        mainMenuOptions()
+    elseif (singlePlayer) then
+        if (timeElapsed > timeLimit) then
+                keyboardPlayer1();
+                updateSnake1();
+                if (collisionSingle()) then
+                    singlePlayer = false;
+                    gameOver = true;
+                end
+            timeElapsed = 0;
         end
-        timeElapsed = 0;
+    elseif (twoPlayer) then
     end
 end
 
 function love.draw()
-    collisionSingle();
+    --THIS IS THE MAIN MENU. WE SHOULD HAVE RULES AND OPTIONS TO PLAY
     if (mainMenu) then
         love.graphics.setColor(.36, 0, 0);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
-        --THIS IS THE MAIN MENU. WE SHOULD HAVE RULES AND OPTIONS TO PLAY
+        love.graphics.setColor(.82, .57, 0);
+        love.graphics.print("use WASD to move. press 1 to start", screenDimX/2 - 500, screenDimY/2 - 200, 0, 5);
+        love.graphics.print("we need a better design lol", screenDimX/2 - 500, screenDimY/2 - 100, 0, 5);
+
+    --Single Player Mode 
     elseif (singlePlayer) then
         love.graphics.setColor(.82, .57, 0);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
+        love.graphics.setColor(.5, 0, 1);
+        love.graphics.rectangle('fill', foodX, foodY, blockSize, blockSize);
+        love.graphics.setColor(.36, 0, 0);
+        love.graphics.print("Your score: "..tostring(score), 0, 0, 0, 2);
+        love.graphics.print("High score: "..tostring(highScore), 0, 25, 0, 2);
         for index, array in ipairs(snake1) do
             love.graphics.setColor(.36, 0, 0);
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
@@ -168,6 +199,12 @@ function love.draw()
     elseif (gameOver) then
         love.graphics.setColor(.5, 0, 1);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
+        love.graphics.setColor(.36, 0, 0);
+        love.graphics.print("YOU LOST", screenDimX/2 - 200, screenDimY/2 - 300, 0, 5);
+        love.graphics.print("Your score: "..tostring(score), screenDimX/2 - 200, screenDimY/2 - 240, 0, 5);
+        love.graphics.print("High score: "..tostring(highScore), screenDimX/2 - 200, screenDimY/2 - 180, 0, 5);
+        love.graphics.print("Press space to get back to main screen", screenDimX/2 - 600, screenDimY/2 - 120, 0, 5);
+        gameOverMenu();
     end
 end
 
