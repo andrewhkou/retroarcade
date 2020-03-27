@@ -28,18 +28,18 @@ function love.load()
     function newGame()
         score = 0;
         snake1 = {
-            {x = 0, y = 0},
-            {x = 0, y = (1 * blockSize)},
-            {x = 0, y = (2 * blockSize)},
-            {x = 0, y = (3 * blockSize)},
-            {x = 0, y = (4 * blockSize)},
+            {x = screenDimX/2, y = screenDimY/2},
+            {x = screenDimX/2, y = screenDimY/2 + (1 * blockSize)},
+            {x = screenDimX/2, y = screenDimY/2 + (2 * blockSize)},
+            {x = screenDimX/2, y = screenDimY/2 + (3 * blockSize)},
+            {x = screenDimX/2, y = screenDimY/2 + (4 * blockSize)},
         };
         snake2 = {
             {x = screenDimX - blockSize, y = 0},
+            {x = screenDimX - blockSize, y = 1 * blockSize},
             {x = screenDimX - blockSize, y = 2 * blockSize},
+            {x = screenDimX - blockSize, y = 3 * blockSize},
             {x = screenDimX - blockSize, y = 4 * blockSize},
-            {x = screenDimX - blockSize, y = 6 * blockSize},
-            {x = screenDimX - blockSize, y = 8 * blockSize},
         };
         direction1 = 3;
         direction2 = 3;
@@ -52,14 +52,22 @@ function love.load()
         timeLimit = .1;
         numBlocksX = screenDimX / blockSize;
         numBlocksY = screenDimY / blockSize;
-        foodX = math.random(170, numBlocksX - 1) * blockSize;
-        foodY = math.random(60, numBlocksY - 1) * blockSize;
+        foodX = math.random(9, numBlocksX - 1) * blockSize;
+        foodY = math.random(3, numBlocksY - 1) * blockSize;
+        while (foodX == snake1[1].x)
+        do
+          foodX = math.random(9, numBlocksX - 1) * blockSize;
+        end
+        while (foodY == snake1[1].y)
+        do
+          foodY = math.random(3, numBlocksY - 1) * blockSize;
+        end
     end
 
     function eatenFood(snakeBody)
         if (snakeBody[1].x == foodX and snakeBody[1].y == foodY) then
-            foodX = math.random(165, numBlocksX -1) * blockSize;
-            foodY = math.random(60, numBlocksY -1) * blockSize;
+            foodX = math.random(9, numBlocksX -1) * blockSize;
+            foodY = math.random(3, numBlocksY -1) * blockSize;
             score = score + 1;
             highScore = math.max(score, highScore);
             return true;
@@ -187,8 +195,9 @@ function love.draw()
         love.graphics.setColor(.36, 0, 0);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
         love.graphics.setColor(.82, .57, 0);
-        love.graphics.print("use WASD to move. press 1 to start single player, 2 to start two player", screenDimX/2 - 500, screenDimY/2 - 200, 0, 5);
-        love.graphics.print("we need a better design lol", screenDimX/2 - 500, screenDimY/2 - 100, 0, 5);
+        love.graphics.print("use WASD to move. press 1 to start single player", screenDimX/2 - 500, screenDimY/2 - 200, 0, 3);
+        love.graphics.print("press 2 to start two player", screenDimX/2 - 500, screenDimY/2 - 100, 0, 3);
+        love.graphics.print("we need a better design lol", screenDimX/2 - 500, screenDimY/2, 0, 3);
 
     --Single Player Mode
     elseif (singlePlayer) then
@@ -206,6 +215,23 @@ function love.draw()
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
         end
     elseif (twoPlayer) then
+        love.graphics.setColor(.82, .57, 0);
+        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
+        love.graphics.setColor(.5, 0, 1);
+        love.graphics.rectangle('fill', foodX, foodY, blockSize, blockSize);
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.rectangle('fill', 0, 0, 170, 60);
+        love.graphics.setColor(.36, 0, 0);
+        love.graphics.print("Your score: "..tostring(score), 0, 0, 0, 2);
+        love.graphics.print("High score: "..tostring(highScore), 0, 25, 0, 2);
+        for index, array in ipairs(snake1) do
+            love.graphics.setColor(.36, 0, 0);
+            love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
+        end
+        for index, array in ipairs(snake2) do
+            love.graphics.setColor(.36, 0, 0);
+            love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
+        end
     elseif (gameOver) then
         love.graphics.setColor(.5, 0, 1);
         love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
