@@ -295,7 +295,7 @@ function love.load()
     function collisionTwoPlayer(snakeBody, num)
         local nextX = snakeBody[1].x;
         local nextY = snakeBody[1].y;
-        for index, place in ipairs(snake1) do
+        for index, place in ipairs(snakeBody) do
             xBoolean = place.x == nextX;
             yBoolean = place.y == nextY;
             if (xBoolean and yBoolean and index ~= 1) then
