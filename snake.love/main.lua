@@ -362,12 +362,13 @@ function love.update(dt)
             updateSnake1();
             keyboardPlayer2();
             updateSnake2();
-            loserSelf = collisionTwoPlayer(snake1, 1);
+            loserSelf1 = collisionTwoPlayer(snake1, 1);
+            loserSelf2 = collisionTwoPlayer(snake2, 2);
             loserCollide = collision(snake1, snake2);
-            if (loser == 1) then
+            if (loserSelf1 == 1) then
                 twoPlayer = false;
                 gameOver2 = 1;
-            elseif (loser == 2) then
+            elseif (loserSelf2 == 2) then
                 twoPlayer = false;
                 gameOver2 = 2;
             elseif (loserCollide == 1) then
