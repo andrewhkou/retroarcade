@@ -5,14 +5,3 @@ Contributors:
 Alexander Yu, Andre Wang
 
 ----------
-
-Game Details:
-
-###Snake###
-[Insert Details]
-
-###Pong###
-[Insert Details]
-
-###Street Fighter###
-[Insert Details]
