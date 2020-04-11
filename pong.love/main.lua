@@ -99,16 +99,20 @@ function love.load()
     end
 
     function handlePaddle1Collision(ball)
-        -- if paddle1.vel > 0 then
-        --     ball
-        -- end
+        if paddle1.vel > 0 then
+            ball.velY = ball.velY/2 + paddle1.vel
+        elseif paddle1.vel < 0 then
+            ball.velY = ball.velY/2 - paddle1.vel
+        end
         ball.velX = -ball.velX
     end
 
     function handlePaddle2Collision(ball)
-        -- if paddle2.vel > 0 then
-        --     ball
-        -- end
+        if paddle2.vel > 0 then
+            ball.velY = ball.velY/2 + paddle2.vel
+        elseif paddle2.vel < 0 then
+            ball.velY = ball.velY/2 - paddle2.vel
+        end
         ball.velX = -ball.velX
     end
 end
