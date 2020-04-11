@@ -10,6 +10,14 @@ function love.load()
     love.window.setTitle("Snake");
     love.window.setMode(screenDimX, screenDimY)
     changeSpeed = false;
+    up1 = "w";
+    right1 = "d";
+    down1 = "s";
+    left1 = "a";
+    up2 = "up";
+    right2 = "right";
+    down2 = "down";
+    left2 = "left";
 
     function mainMenuOptions()
         if (love.keyboard.isDown(1)) then
@@ -98,19 +106,19 @@ function love.load()
     end
 
     function keyboardPlayer1()
-        if (love.keyboard.isDown("w")) then
+        if (love.keyboard.isDown(up1)) then
             if (direction1 ~= 1) then
                 direction1 = 3;
             end
-        elseif (love.keyboard.isDown("d")) then
+        elseif (love.keyboard.isDown(right1)) then
             if (direction1 ~= 4) then
                 direction1 = 2;
             end
-        elseif (love.keyboard.isDown("s")) then
+        elseif (love.keyboard.isDown(down1)) then
             if (direction1 ~= 3) then
                 direction1 = 1;
             end
-        elseif (love.keyboard.isDown("a")) then
+        elseif (love.keyboard.isDown(left1)) then
             if (direction1 ~= 2) then
                 direction1 = 4;
             end
@@ -118,19 +126,19 @@ function love.load()
     end
 
     function keyboardPlayer2()
-        if (love.keyboard.isDown("up")) then
+        if (love.keyboard.isDown(up2)) then
             if (direction2 ~= 1) then
                 direction2 = 3;
             end
-        elseif (love.keyboard.isDown("right")) then
+        elseif (love.keyboard.isDown(right2)) then
             if (direction2 ~= 4) then
                 direction2 = 2;
             end
-        elseif (love.keyboard.isDown("down")) then
+        elseif (love.keyboard.isDown(down2)) then
             if (direction2 ~= 3) then
                 direction2 = 1;
             end
-        elseif (love.keyboard.isDown("left")) then
+        elseif (love.keyboard.isDown(left2)) then
             if (direction2 ~= 2) then
                 direction2 = 4;
             end
