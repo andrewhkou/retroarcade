@@ -26,9 +26,9 @@ function love.load()
 
 
     ball = {
-        x = 50,
-        y = 50,
-        velX = 2,
+        x = 100,
+        y = 100,
+        velX = 7,
         velY = -1,
         radius = 8
     }
@@ -36,20 +36,58 @@ function love.load()
     love.window.setTitle("Pong");
     love.window.setMode(screenDimX, screenDimY)
 
-    function ballXBorder(ball) 
+    function getPaddle1LowerY()
+        return paddle1.y + paddleHeight
+    end
+
+    function getPaddle1UpperY()
+        return paddle1.y
+    end
+
+    function getPaddle2LowerY()
+        return paddle2.y + paddleHeight
+    end
+
+    function getPaddle2UpperY()
+        return paddle2.y
+    end
+
+    function detectPaddle1Collision(ball)
+        if paddle1.x + paddleWidth - ballXBorder(ball, "left") >= 0 and ball.y <= getPaddle1LowerY() and ball.y >= getPaddle1UpperY() then
+            return true
+        end
+        return false
+    end
+
+    function detectPaddle2Collision(ball)
+        if paddle2.x - ballXBorder(ball, "right") <= 0 and ball.y <= getPaddle2LowerY() and ball.y >= getPaddle2UpperY() then
+            return true
+        end
+        return false
+    end
+
+    function paddle2Collision(ball)
+        return true
+    end 
+
+    function ballXBorder(ball, direction) 
+        if (direction == "left") then
+            return ball.x - ball.radius
+        end
+        if (direction == "right") then
+            return ball.x + ball.radius
+        end
         return ball.x + ball.radius
     end
 
     function ballYBorder(ball) 
+        if (direction == "top") then
+            return ball.y - ball.radius
+        end
+        if (direction == "bottom") then
+            return ball.y + ball.radius
+        end
         return ball.y + ball.radius
-    end
-
-    function paddle1Collision(ball, paddle1)
-        return true 
-    end
-
-    function paddle2Collision(ball, paddle2)
-        return true
     end
 
     function wallVerticalCollision(ball)
@@ -57,6 +95,20 @@ function love.load()
     end
 
     function wallHorizontalCollision(ball)
+        ball.velX = -ball.velX
+    end
+
+    function handlePaddle1Collision(ball)
+        -- if paddle1.vel > 0 then
+        --     ball
+        -- end
+        ball.velX = -ball.velX
+    end
+
+    function handlePaddle2Collision(ball)
+        -- if paddle2.vel > 0 then
+        --     ball
+        -- end
         ball.velX = -ball.velX
     end
 end
@@ -92,12 +144,20 @@ function love.update(dt)
     end
 
     -- handles ball movement
-    if ballXBorder(ball) <= 0 or ballXBorder(ball) >= screenDimX then
+    if ballXBorder(ball, "left") <= 0 or ballXBorder(ball, "right") >= screenDimX then
         wallHorizontalCollision(ball)
     end
 
-    if ballYBorder(ball) <= 0 or ballYBorder(ball) >= screenDimY then
+    if ballYBorder(ball, "top") <= 0 or ballYBorder(ball, "bottom") >= screenDimY then
         wallVerticalCollision(ball)
+    end 
+
+    if detectPaddle1Collision(ball) then
+        handlePaddle1Collision(ball)
+    end 
+
+    if detectPaddle2Collision(ball) then
+        handlePaddle2Collision(ball)
     end 
 
     ball.x = ball.x + ball.velX
