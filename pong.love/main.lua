@@ -26,14 +26,23 @@ function love.load()
 
 
     ball = {
-        ballX = 0,
-        ballY = 0,
-        velX = 0,
-        velY = 0
+        x = 50,
+        y = 50,
+        velX = 2,
+        velY = -1,
+        radius = 8
     }
 
     love.window.setTitle("Pong");
     love.window.setMode(screenDimX, screenDimY)
+
+    function ballXBorder(ball) 
+        return ball.x + ball.radius
+    end
+
+    function ballYBorder(ball) 
+        return ball.y + ball.radius
+    end
 
     function paddle1Collision(ball, paddle1)
         return true 
@@ -43,12 +52,12 @@ function love.load()
         return true
     end
 
-    function wallTopCollision(ball)
-        return true
+    function wallVerticalCollision(ball)
+        ball.velY = -ball.velY
     end
 
-    function wallBottomCollision(ball)
-        return true
+    function wallHorizontalCollision(ball)
+        ball.velX = -ball.velX
     end
 end
 
@@ -56,6 +65,7 @@ function love.update(dt)
     timeElapsed = timeElapsed + dt;
     totalTimeElapsed = totalTimeElapsed + 1;
 
+    -- handles keyboard inputs
     if not love.keyboard.isDown('w') or not love.keyboard.isDown('s') then
         paddle1.vel = 0;
     end
@@ -80,10 +90,25 @@ function love.update(dt)
         paddle2.y = paddle2.y + paddleSpeed
         paddle2.vel = -5
     end
+
+    -- handles ball movement
+    if ballXBorder(ball) <= 0 or ballXBorder(ball) >= screenDimX then
+        wallHorizontalCollision(ball)
+    end
+
+    if ballYBorder(ball) <= 0 or ballYBorder(ball) >= screenDimY then
+        wallVerticalCollision(ball)
+    end 
+
+    ball.x = ball.x + ball.velX
+    ball.y = ball.y + ball.velY
+
+
 end
 
 function love.draw() 
     love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
     love.graphics.rectangle('fill', paddle1.x, paddle1.y, paddleWidth, paddleHeight)
     love.graphics.rectangle('fill', paddle2.x, paddle2.y, paddleWidth, paddleHeight)
+    love.graphics.circle('fill', ball.x, ball.y, ball.radius)
 end
