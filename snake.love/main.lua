@@ -1,6 +1,10 @@
 function love.load()
     mainMenuPNG = love.graphics.newImage("Snake_Main_Menu.png")
-    font = love.graphics.newFont("VT323-Regular.ttf", 40);
+    gameMenu1PNG = love.graphics.newImage("Game_Screen_1.png")
+    gameMenu2PNG = love.graphics.newImage("Game_Screen_2.png")
+    gameOver1PNG = love.graphics.newImage("GameOver1.png")
+    gameOver2PNG = love.graphics.newImage("GameOver2.png")
+    font = love.graphics.newFont("VT323-Regular.ttf", 130);
     love.graphics.setFont(font);
     screenDimX = 1920;
     screenDimY = 1200;
@@ -70,7 +74,7 @@ function love.load()
     end
 
     function gameOverMenu()
-        if (love.keyboard.isDown("space")) then
+        if (love.keyboard.isDown(enter)) then
             start = true;
             newGame();
         end
@@ -442,6 +446,7 @@ function love.draw()
     --THIS IS THE MAIN MENU. WE SHOULD HAVE RULES AND OPTIONS TO PLAY
     if (mainMenu) then
         love.graphics.setLineWidth(10)
+        love.graphics.setColor(1,1,1);
         love.graphics.draw(mainMenuPNG,0,0);
         if (mainMenuSingle) then
             love.graphics.rectangle("line", 433, 623, 1040.38, 179.64)
@@ -450,34 +455,29 @@ function love.draw()
         elseif (mainMenuHelp) then
             love.graphics.circle("line", 70, 1089+35, 50)
         elseif (mainMenuBack) then
-            love.graphics.rectangle("line", 1773, 1040, 147, 157)
+            love.graphics.rectangle("line", 1760, 1025, 160, 172)
         end
     --Single Player Mode
     elseif (singlePlayer) then
-        love.graphics.setColor(.82, .57, 0);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
+        love.graphics.setColor(1,1,1);
+        love.graphics.draw(gameMenu1PNG,0,0)
         love.graphics.setColor(.5, 0, 1);
         love.graphics.rectangle('fill', foodX, foodY, blockSize, blockSize);
         love.graphics.setColor(1, 1, 1);
-        love.graphics.rectangle('fill', 0, 0, 170, 60);
-        love.graphics.setColor(.36, 0, 0);
-        love.graphics.print("Your score: "..tostring(score), 0, 0, 0, 2);
-        love.graphics.print("High score: "..tostring(highScore), 0, 25, 0, 2);
+        love.graphics.print(score, 225, 34, 0, .5, .5);
         for index, array in ipairs(snake1) do
             love.graphics.setColor(0, 0, 0);
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
         end
     elseif (twoPlayer) then
-        love.graphics.setColor(0, 0, 0);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameMenu2PNG, 0, 0);
         love.graphics.setColor(.5, 0, 1);
         love.graphics.rectangle('fill', foodX, foodY, blockSize, blockSize);
-        love.graphics.setColor(1, 1, 1);
-        love.graphics.rectangle('fill', screenDimX/2 - 100, 0, 200, 60);
         love.graphics.setColor(.36, 0, 0);
-        love.graphics.print("Player1 score: "..tostring(score1), screenDimX/2 - 100, 0, 0, 2);
+        love.graphics.print(score1, 450, 36, 0, .5, .5);
         love.graphics.setColor(.82, .57, 0);
-        love.graphics.print("Player2 score: "..tostring(score2), screenDimX/2 - 100, 25, 0, 2);
+        love.graphics.print(score2, 450, 126, 0, .5, .5);
         for index, array in ipairs(snake1) do
             love.graphics.setColor(.36, 0, 0);
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
@@ -487,31 +487,26 @@ function love.draw()
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
         end
     elseif (gameOver1) then
-        love.graphics.setColor(.5, 0, 1);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
-        love.graphics.setColor(.36, 0, 0);
-        love.graphics.print("YOU LOST", screenDimX/2 - 200, screenDimY/2 - 300, 0, 5);
-        love.graphics.print("Your score: "..tostring(score), screenDimX/2 - 200, screenDimY/2 - 240, 0, 5);
-        love.graphics.print("High score: "..tostring(highScore), screenDimX/2 - 200, screenDimY/2 - 180, 0, 5);
-        love.graphics.print("Press space to get back to main screen", screenDimX/2 - 600, screenDimY/2 - 120, 0, 5);
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameOver1PNG, 0, 0);
+        love.graphics.print(score, 975, 110, 0, .7, .7)
+        love.graphics.rectangle("line", 1760, 1025, 160, 172)
         gameOverMenu();
     elseif (gameOver2 == 1) then
-        love.graphics.setColor(.5, 0, 1);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
-        love.graphics.setColor(.36, 0, 0);
-        love.graphics.print("Player 1 LOST", screenDimX/2 - 200, screenDimY/2 - 300, 0, 5);
-        love.graphics.print("Player 1 score: "..tostring(score1), screenDimX/2 - 200, screenDimY/2 - 240, 0, 5);
-        love.graphics.print("Player 2 score: "..tostring(score2), screenDimX/2 - 200, screenDimY/2 - 180, 0, 5);
-        love.graphics.print("Press space to get back to main screen", screenDimX/2 - 600, screenDimY/2 - 120, 0, 5);
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameOver2PNG, 0, 0)
+        love.graphics.print("TWO", 910, 73);
+        love.graphics.print(score1, 760, 995, 0, .5, .5);
+        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172)
         gameOverMenu();
     elseif (gameOver2 == 2) then
-        love.graphics.setColor(.5, 0, 1);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
-        love.graphics.setColor(.36, 0, 0);
-        love.graphics.print("Player 2 LOST", screenDimX/2 - 200, screenDimY/2 - 300, 0, 5);
-        love.graphics.print("Player 1 score: "..tostring(score1), screenDimX/2 - 200, screenDimY/2 - 240, 0, 5);
-        love.graphics.print("Player 2 score: "..tostring(score2), screenDimX/2 - 200, screenDimY/2 - 180, 0, 5);
-        love.graphics.print("Press space to get back to main screen", screenDimX/2 - 600, screenDimY/2 - 120, 0, 5);
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameOver2PNG, 0, 0)
+        love.graphics.print("ONE", 910, 73);
+        love.graphics.print(score1, 760, 995, 0, .5, .5);
+        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172)
         gameOverMenu();
     end
 end
