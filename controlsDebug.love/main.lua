@@ -1,6 +1,6 @@
 function love.load()
-    screenDimX = 1280;
-    screenDimY = 720;
+    screenDimX = 1920;
+    screenDimY = 1200;
     love.window.setTitle("Debugger");
     love.window.setMode(screenDimX, screenDimY)
     pressedKey = "none";
@@ -11,6 +11,7 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
+    
     
 end
 

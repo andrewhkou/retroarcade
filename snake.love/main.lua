@@ -1,6 +1,9 @@
 function love.load()
-    screenDimX = 1280;
-    screenDimY = 720;
+    mainMenuPNG = love.graphics.newImage("Snake_Main_Menu.png")
+    font = love.graphics.newFont("VT323-Regular.ttf", 40);
+    love.graphics.setFont(font);
+    screenDimX = 1920;
+    screenDimY = 1200;
     blockSize = 20;
     totalTimeElapsed = 0;
     highScore = 0;
@@ -18,14 +21,51 @@ function love.load()
     right2 = "right";
     down2 = "down";
     left2 = "left";
+    enter = "return"
+    mainMenuHelp = false;
+    mainMenuSingle = true;
+    mainMenuTwo = false;
+    mainMenuBack = false;
 
     function mainMenuOptions()
-        if (love.keyboard.isDown(1)) then
+        if (mainMenuSingle) then
+            if (love.keyboard.isDown(down1)) then
+                mainMenuSingle = false;
+                mainMenuTwo = true;
+            end
+        elseif (mainMenuTwo) then
+            if (love.keyboard.isDown(up1)) then
+                mainMenuSingle = true;
+                mainMenuTwo = false;
+            elseif (love.keyboard.isDown(left1)) then
+                mainMenuHelp = true;
+                mainMenuTwo = false;
+            elseif (love.keyboard.isDown(right1)) then
+                mainMenuTwo = false;
+                mainMenuBack = true;
+            end
+        elseif (mainMenuHelp) then
+            if (love.keyboard.isDown(right1)) then
+                mainMenuHelp = false;
+                mainMenuTwo = true;
+            end
+        elseif (mainMenuBack) then
+            if (love.keyboard.isDown(left1)) then
+                mainMenuBack = false;
+                mainMenuTwo = true;
+            end
+        end
+        if (love.keyboard.isDown(enter)) then
+            if (mainMenuSingle) then
+                singlePlayer = true;
+            elseif (mainMenuTwo) then
+                twoPlayer = true;
+            elseif (mainMenuBack) then
+                -- ANDRE DO THIS LOL
+            elseif (mainMenuHelp) then
+                -- HELP MENU
+            end
             mainMenu = false;
-            singlePlayer = true;
-        elseif (love.keyboard.isDown(2)) then
-            mainMenu = false;
-            twoPlayer = true;
         end
     end
 
@@ -68,6 +108,10 @@ function love.load()
         numBlocksY = screenDimY / blockSize;
         foodX = math.random(9, numBlocksX - 1) * blockSize;
         foodY = math.random(3, numBlocksY - 1) * blockSize;
+        mainMenuHelp = false;
+        mainMenuSingle = true;
+        mainMenuTwo = false;
+        mainMenuBack = false;
         while (foodX == snake1[1].x)
         do
           foodX = math.random(9, numBlocksX - 1) * blockSize;
@@ -353,7 +397,10 @@ function love.update(dt)
       end
     end
     if (mainMenu) then
-        mainMenuOptions();
+        if (timeElapsed > timeLimit) then
+            mainMenuOptions();
+            timeElapsed = 0;
+        end
     elseif (singlePlayer) then
         if (timeElapsed > timeLimit) then
             keyboardPlayer1();
@@ -394,13 +441,17 @@ end
 function love.draw()
     --THIS IS THE MAIN MENU. WE SHOULD HAVE RULES AND OPTIONS TO PLAY
     if (mainMenu) then
-        love.graphics.setColor(.36, 0, 0);
-        love.graphics.rectangle('fill', 0, 0, screenDimX, screenDimY);
-        love.graphics.setColor(.82, .57, 0);
-        love.graphics.print("use WASD to move. press 1 to start single player", screenDimX/2 - 500, screenDimY/2 - 200, 0, 3);
-        love.graphics.print("use WASD and arrow keys to move. press 2 to start two player", screenDimX/2 - 500, screenDimY/2 - 100, 0, 3);
-        love.graphics.print("we need a better design lol", screenDimX/2 - 500, screenDimY/2, 0, 3);
-
+        love.graphics.setLineWidth(10)
+        love.graphics.draw(mainMenuPNG,0,0);
+        if (mainMenuSingle) then
+            love.graphics.rectangle("line", 433, 623, 1040.38, 179.64)
+        elseif (mainMenuTwo) then
+            love.graphics.rectangle("line", 433, 856, 1040.38, 179.64)
+        elseif (mainMenuHelp) then
+            love.graphics.circle("line", 70, 1089+35, 50)
+        elseif (mainMenuBack) then
+            love.graphics.rectangle("line", 1773, 1040, 147, 157)
+        end
     --Single Player Mode
     elseif (singlePlayer) then
         love.graphics.setColor(.82, .57, 0);
@@ -413,7 +464,7 @@ function love.draw()
         love.graphics.print("Your score: "..tostring(score), 0, 0, 0, 2);
         love.graphics.print("High score: "..tostring(highScore), 0, 25, 0, 2);
         for index, array in ipairs(snake1) do
-            love.graphics.setColor(.36, 0, 0);
+            love.graphics.setColor(0, 0, 0);
             love.graphics.rectangle('fill', array.x, array.y, blockSize, blockSize);
         end
     elseif (twoPlayer) then
