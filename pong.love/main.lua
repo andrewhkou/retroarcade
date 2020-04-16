@@ -20,13 +20,13 @@ paddleWidth = 20
 paddleHeight = 70
 
 paddle1 = {
-    x = 50,
+    x = 75,
     y = (screenDimY / 2) -  (paddleHeight / 2);
     vel= 0;
 }
 
 paddle2 = {
-    x = screenDimX - 50 - paddleWidth,
+    x = screenDimX - 75 - paddleWidth,
     y = (screenDimY / 2) -  (paddleHeight / 2), 
     vel = 0;
 }
@@ -56,14 +56,14 @@ function getPaddle2UpperY()
 end
 
 function detectPaddle1Collision(ball)
-    if paddle1.x + paddleWidth - ballXBorder(ball, "left") >= 0 and ball.y <= getPaddle1LowerY() and ball.y >= getPaddle1UpperY() then
+    if paddle1.x + paddleWidth - ballXBorder(ball, "left") >= 0 and ball.y <= getPaddle1LowerY() and ball.y >= getPaddle1UpperY() + 2 then
         return true
     end
     return false
 end
 
 function detectPaddle2Collision(ball)
-    if paddle2.x - ballXBorder(ball, "right") <= 0 and ball.y <= getPaddle2LowerY() and ball.y >= getPaddle2UpperY() then
+    if paddle2.x - ballXBorder(ball, "right") <= 0 and ball.y <= getPaddle2LowerY() and ball.y >= getPaddle2UpperY() + 2 then
         return true
     end
     return false
