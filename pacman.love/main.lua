@@ -11,49 +11,49 @@ topBar = {
 	x = 40,
 	y = 0,
 	width = 1200,
-	height = 50
+	height = 25
 }
 bottomBar = {
 	x = 40,
 	y = screenDimX - 50,
 	width = 1200,
-	height = 50
+	height = 25
 }
 va = {
 	x = 40,
 	y = 0,
-	width = 50,
+	width = 25,
 	height = 350
 }
 vb = {
 	x = screenDimX/2 - 25,
 	y = 0,
-	width = 50,
+	width = 25,
 	height = 150
 }
 ha = {
 	x = va.x + 50 + 50,
 	y = 50 + 50,
 	width = (vb.x - va.x - 50 - 150) / 2,
-	height = 50
+	height = 25
 }
 hb = {
 	x = ha.x + ha.width + 50,
 	y = ha.y,
 	width = ha.width,
-	height = 50
+	height = 25
 }
 hc = {
 	x = vb.x + vb.width + 50,
 	y = 100,
 	width = ha.width,
-	height = 50
+	height = 25
 }
 hd = {
 	x = hc.x + hc.width + 50,
 	y = 100,
 	width = ha.width,
-	height = 50
+	height = 25
 
 }
 he = {
@@ -67,7 +67,7 @@ hf = {
 	x = hb.x + 100,
 	y = he.y,
 	width = 325,
-	height = 50
+	height = 25
 }
 hg = {
 	x = hd.x,
@@ -78,96 +78,97 @@ hg = {
 hh = {
 	x = 40,
 	y = va.height - 50,
-	width = ha.width + 50 + 50,
-	height = 50
+	width = ha.width + 50,
+	height = 25
 }
 hk = { 
 	x = hd.x,
 	y = hh.y,
-	width = hd.width + 50 + 50,
-	height = 50
+	width = hd.width + 50,
+	height = 25
 }
 hl = {
 	x = 0,
-	y = va.height + 50,
+	y = va.height + 25,
 	width = hh.width + 40,
-	height = 50
+	height = 25
 }
 hm = {
 	x = hk.x,
 	y = hl.y,
 	width = hk.width + 40,
-	height = 50
+	height = 25
+}
+hi = {
+	x = hb.x,
+	y = hh.y,
+	width = hb.width,
+	height = 25
+}
+hj = {
+	x = hi.x + hi.width + 150,
+	y = hi.y,
+	width = hc.width,
+	height = 25
+}
+hn = {
+	x = hl.x,
+	y = hl.y + 100,
+	width = hl.width,
+	height = 25
+}
+ho = {
+	x = hm.x,
+	y = hn.y,
+	width = hm.width,
+	height = 25
 }
 
 
 vc = {
 	x = screenDimX - 90,
 	y = 0,
-	width = 50,
+	width = 25,
 	height = va.height
 }
 vd = { 
-	x = 40 + hh.width - 50,
+	x = 40 + hh.width - 25,
 	y = hh.y,
-	width = 50, 
+	width = 25, 
 	height = 150
 
 }
 ve = {
 	x = he.x + 50 + he.width,
 	y = he.y,
-	width = 50,
+	width = 25,
 	height = 250
 }
 vf = {
 	x = vb.x,
 	y = he.y,
-	width = 50,
+	width = 25,
 	height = 150
 }
 vg = {
-	x = screenDimX - ve.x - 50,
+	x = screenDimX - ve.x - 25,
 	y = hf.y,
-	width = 50,
+	width = 25,
 	height = ve.height
 }
 vh = {
 	x = hg.x,
 	y = vd.y,
-	width = 50,
+	width = 25,
 	height = vd.height
 }
 
 
 
--- a3 = {
--- 	x = 
--- 	y = 
--- 	width = 140
--- 	height = 36
--- }
--- a1 = {
--- 	x = 
--- 	y = 
--- 	width = 140
--- 	height = 36
--- }
--- a1 = {
--- 	x = 
--- 	y = 
--- 	width =
--- 	height = 
--- }
 
--- sideBar = {
--- 	x = 
--- 	y = 
--- 	width = 
--- 	height = 
--- }
-
-rectangles = {va=va,vb=vb,vc=vc,vd=vd,ve=ve,vf=vf,vg=vg,vh=vh,ha=ha,hb=hb,hc=hc,hd=hd,he=he, hf=hf, hg=hg, hh=hh, hk=hk, hl=hl, hm=hm}
+rectangles = {va=va,vb=vb,vc=vc,vd=vd,ve=ve,vf=vf,vg=vg,vh=vh,ha=ha,
+hb=hb,hc=hc,hd=hd,he=he, hf=hf, hg=hg, hh=hh, hk=hk, hl=hl, hm=hm, hi=hi, 
+hj=hj, hn=hn, ho=ho}
 
 l = love.graphics.newImage("8bit_left.jpg");
 r = love.graphics.newImage("8bit_right.jpg");
