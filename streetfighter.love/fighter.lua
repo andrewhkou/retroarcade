@@ -5,7 +5,6 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight)
     f.name = name
     f.health = 100
     f.keyMap = keyMap
-    f.state = "stand"
     f.direction = direction
     f.velY = 0
     f.x = x
@@ -41,16 +40,22 @@ function Fighter:getWidth()
     return self.width
 end
 
-function Fighter:hitPlayer(player2, xDist, yDist)
-    p2Coords = player2.getCoord()
-    if (p2Coords.y > self.y and p2Coords.y - self.y <= yDist) or (p2Coords.y <= self.y and self.y - p2Coords.y <= yDist) then
-         if (p2Coords.x > self.x and p2Coords.x - self.x <= xDist) or (p2Coords.x <= self and self.x - p2Coords.x <= xDist) then
-             if player2.getState() == "punch" then 
-                 return true  
-             end
-         end
-     end
-end
+-- function Fighter:hitPlayer(player2)
+--     xDist = self.width
+--     yDist = self.height
+--     p2Coords = {
+--         x = player2.x,
+--         y = player2.y
+--     }
+--     if (p2Coords.y > self.y and p2Coords.y - self.y <= yDist) or (p2Coords.y <= self.y and self.y - p2Coords.y <= yDist) then
+--          if (p2Coords.x > self.x and p2Coords.x - self.x <= xDist) or (p2Coords.x <= self and self.x - p2Coords.x <= xDist) then
+--              if player2.getState() == "punch" then 
+--                  self.height = self.height - 40
+--                  return true  
+--              end
+--          end
+--      end
+-- end
 
 function Fighter:walkRightAction()
     if self.x >= (self.screenDimX - self.width) then
@@ -68,8 +73,21 @@ function Fighter:walkLeftAction()
     end
 end
 
-function Fighter:loseHealth(amount)
-    self.health = self.health - amount
+function Fighter:loseHealth(player2)
+    loss = math.random(1, 8)
+    if self.health - loss < 0 then
+        self.health = 0
+    else
+        self.health = self.health - math.random(1, 8)
+    end
+    player2.punch = false
+end
+
+function Fighter:isDead()
+    if self.health <= 0 then
+        return true
+    end
+    return false
 end
 
 function Fighter:jumpUpAction()
@@ -111,9 +129,6 @@ function Fighter:update(dt)
         self.y = self.y - 20
         self.jumpUp = true
     end
-    if love.keyboard.isDown(self.keyMap['punch']) then
-        self.state = "punch"
-    end 
 
     if self.walkRight then
        self:walkRightAction()
@@ -127,10 +142,15 @@ function Fighter:update(dt)
     if self.jumpFall then 
         self:jumpFallAction()
     end
-
     self:animate()
 end
 
+function Fighter:keypressed(key, unicode)
+    if key == self.keyMap['punch'] then
+        self.punch = true
+    end 
+end
+
 function Fighter:animate()
-    love.graphics.rectangle('fill', self.x, self.y, 100, 200)
+    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
