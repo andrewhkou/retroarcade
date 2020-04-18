@@ -1,7 +1,7 @@
 screenDimX = 725
 screenDimY = 725
 block = 25
-vel = 12.5
+vel = block/2
 timeElapsed = 0
 
 require("walls") -- import walls
@@ -13,31 +13,6 @@ dir = {
 	down = "s",
 	right = "d"
 }
-
-rectangles = {va=va,vb=vb,vc=vc,vd=vd,ve=ve,vf=vf, vg=vg, vh=vh, vi=vi, vj=vj, vk=vk, 
-vl=vl, vm=vm, vn=vn, vo=vo, vp=vp, vq=vq, vr=vr, vs=vs, vt=vt, ha=ha,
-hb=hb, hc=hc, hd=hd, he=he, hf=hf, hg=hg, hh=hh, hi=hi, hj=hj, hk=hk, hl=hl, hm=hm,  
-hn=hn, ho=ho, hp=hp, hq=hq, hr=hr, hs=hs, ht=ht, hu=hu, hv=hv, hw=hw, hx=hx, hy=hy,
-hz=hz, haa=haa, topBar=topBar, bottomBar=bottomBar, b1=b1, b2=b2, b3=b3, b4=b4, b5=b5}
-
-allDots = {}
-
-function addDot(r, c)
-	x = block * (c - 1)
-	y = block * (r - 1)
-	circle = {
-		x = x + block / 2,
-		y = y + block / 2,
-		radius = 3
-	}
-	table.insert(allDots, circle)
-end
-
-for row = 1, 29, 1 do
-	for col = 1, 19, 1 do
-		if dots[row][col] == 1 then addDot(row, col) end
-	end
-end
 
 l = love.graphics.newImage("8bit_left.jpg")
 r = love.graphics.newImage("8bit_right.jpg")
@@ -52,8 +27,50 @@ pacman = {
 	yvel = 0,
 	angle = 0
 }
-fire = 0
-fire1 = 0
+
+allDots = {}
+
+function intToIndex(x, y)
+	return tostring(x) .. "," .. tostring(y)
+end
+
+function addDot(r, c)
+	x = block * (c - 1)
+	y = block * (r - 1)
+	circle = {
+		x = x + block / 2,
+		y = y + block / 2,
+		radius = 2.5
+	}
+	allDots[intToIndex(x + block/2, y + block/2)] = circle
+end
+
+for row = 1, 29, 1 do
+	for col = 1, 29, 1 do
+		if dots[row][col] == 1 then addDot(row, col) end
+	end
+end
+
+function eatDot()
+	edges = {
+		center = {pacman.x + block/2, pacman.y + block/2},
+		topmid = {pacman.x + block/2, pacman.y},
+		botmid = {pacman.x + block/2, pacman.y + block},
+		leftmid = {pacman.x, pacman.y + block/2},
+		rightmid = {pacman.x + block, pacman.y + block/2}
+	}
+	for _, dot in pairs(allDots) do
+		centerx = dot.x
+		centery = dot.y
+		for _, edge in pairs(edges) do
+			if edge[1] == centerx and edge[2] == centery then
+				allDots[intToIndex(centerx, centery)] = nil
+				break
+			end
+		end
+	end
+end
+
 function overlap(corner, rect)
 	x = corner[1]
 	y = corner[2]
@@ -62,8 +79,6 @@ function overlap(corner, rect)
 	botRX = rect.x + rect.width
 	botRY = rect.y + rect.height
 	if x > topLX and x < botRX and y > topLY and y < botRY then
-		fire = rect.x
-		fire1 = rect.y
 		return true
 	end
 	return false
@@ -124,20 +139,21 @@ function love.update(dt)
 			pacman.x = pacman.x + pacman.xvel;
 			pacman.y = pacman.y + pacman.yvel;
 		end
+		eatDot()
 	end
 end
 
 function love.draw()
-	love.graphics.print(tostring(fire), 500, 600)
-	love.graphics.print(tostring(fire1), 660, 600)
+	love.graphics.print(tostring(pacman.x), 500, 600)
+	love.graphics.print(tostring(pacman.y), 620, 600)
+	love.graphics.setColor(247, 255, 0) -- draw pacman
 	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
-	love.graphics.setColor(0, 128, 128)
-	for _, v in pairs(rectangles) do
+	love.graphics.setColor(0, 0, 255)
+	for _, v in pairs(rectangles) do -- draw walls
 		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
 	end
-	for i = 1, #allDots, 1 do
-		circle = allDots[i]
+	love.graphics.setColor(255, 255, 255) -- draw dots
+	for _, circle in pairs(allDots) do
 		love.graphics.circle('fill', circle.x, circle.y, circle.radius)
 	end
-	love.graphics.setColor(247, 255, 0)
 end
