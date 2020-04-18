@@ -1,6 +1,8 @@
-screenDimX = 1280;
-screenDimY = 720;
-
+screenDimX = 725;
+screenDimY = 725;
+block = 25;
+vel = 12.5;
+timeElapsed = 0;
 dir = {
 	up = "w",
 	left = "a",
@@ -8,167 +10,338 @@ dir = {
 	right = "d"
 }
 topBar = {
-	x = 40,
+	x = 0,
 	y = 0,
-	width = 1200,
-	height = 25
+	width = screenDimX,
+	height = block
 }
-bottomBar = {
-	x = 40,
-	y = screenDimX - 50,
-	width = 1200,
-	height = 25
-}
+
 va = {
-	x = 40,
+	x = 0,
 	y = 0,
-	width = 25,
-	height = 350
+	width = block,
+	height = 175
 }
 vb = {
-	x = screenDimX/2 - 25,
+	x = screenDimX/2 - block/2,
 	y = 0,
-	width = 25,
-	height = 150
+	width = block,
+	height = (3 * block)
 }
 ha = {
-	x = va.x + 50 + 50,
-	y = 50 + 50,
-	width = (vb.x - va.x - 50 - 150) / 2,
-	height = 25
+	x = va.x + 2 * block,
+	y = 2 * block,
+	width = (vb.x - va.x - block - (3 * block)) / 2,
+	height = block
 }
 hb = {
-	x = ha.x + ha.width + 50,
+	x = ha.x + ha.width + block,
 	y = ha.y,
 	width = ha.width,
-	height = 25
+	height = block
 }
 hc = {
-	x = vb.x + vb.width + 50,
-	y = 100,
+	x = vb.x + vb.width + block,
+	y = ha.y,
 	width = ha.width,
-	height = 25
+	height = block
 }
 hd = {
-	x = hc.x + hc.width + 50,
-	y = 100,
+	x = hc.x + hc.width + block,
+	y = ha.y,
 	width = ha.width,
-	height = 25
+	height = block
 
 }
 he = {
 	x = ha.x,
-	y = ha.y + 100,
+	y = ha.y + 2 * block,
 	width = ha.width,
 	height = ha.height
 
 }
 hf = { 
-	x = hb.x + 100,
+	x = he.x + he.width + 3 * block,
 	y = he.y,
-	width = 325,
-	height = 25
+	width = hd.x - (2 * block) - (he.x + he.width + (2 * block)) - (2 * block),
+	height = block
 }
 hg = {
 	x = hd.x,
-	y = hf.y,
+	y = hd.y + 2 * block,
 	width = hd.width,
 	height = hd.height
 }
 hh = {
-	x = 40,
-	y = va.height - 50,
-	width = ha.width + 50,
-	height = 25
+	x = 0,
+	y = va.height - block,
+	width = ha.width + 2 * block,
+	height = block
 }
 hk = { 
 	x = hd.x,
 	y = hh.y,
-	width = hd.width + 50,
-	height = 25
+	width = hd.width + 2 * block,
+	height = block
 }
 hl = {
 	x = 0,
-	y = va.height + 25,
-	width = hh.width + 40,
-	height = 25
+	y = va.height + 2 * block,
+	width = hh.width,
+	height = block
 }
 hm = {
 	x = hk.x,
 	y = hl.y,
-	width = hk.width + 40,
-	height = 25
+	width = hk.width,
+	height = block
 }
 hi = {
 	x = hb.x,
 	y = hh.y,
 	width = hb.width,
-	height = 25
+	height = block
 }
 hj = {
-	x = hi.x + hi.width + 150,
+	x = hi.x + hi.width + 3 * block,
 	y = hi.y,
 	width = hc.width,
-	height = 25
+	height = block
 }
 hn = {
 	x = hl.x,
-	y = hl.y + 100,
+	y = hl.y + (2 * block),
 	width = hl.width,
-	height = 25
+	height = block
 }
 ho = {
 	x = hm.x,
 	y = hn.y,
 	width = hm.width,
-	height = 25
+	height = block
 }
-
-
+hp = {
+	x = hn.x,
+	y = hn.y + (2 * block),
+	width = hn.width,
+	height = block
+}
+hq = {
+	x = hf.x,
+	y = hp.y,
+	width = hf.width,
+	height = block
+}
+hr = {
+	x = ho.x,
+	y = hp.y,
+	width = hp.width,
+	height = block
+}
+hs = {
+	x = he.x,
+	y = hp.y + 2 * block,
+	width = ha.width,
+	height = block
+}
+ht = {
+	x = hb.x,
+	y = hs.y,
+	width = ha.width,
+	height = block
+}
+hu = {
+	x = hc.x,
+	y = hs.y,
+	width = ha.width,
+	height = block
+}
+hv = {
+	x = hd.x,
+	y = hs.y,
+	width = ha.width,
+	height = block
+}
+hw = {
+	x = hs.x,
+	y = hp.y + (2*block) + hs.height + block,
+	width = 3 * block,
+	height = block
+}
+hx = {
+	x = hq.x,
+	y = hw.y,
+	width = hf.width,
+	height = block
+}
+hy = {
+	x = hv.x + (2*block),
+	y = hw.y,
+	width = 3 * block,
+	height = block
+}
+hz = {
+	x = hs.x,
+	y = hw.y + (2*block),
+	width = hs.width + block + ht.width,
+	height = block
+}
+haa = {
+	x = hu.x,
+	y = hz.y,
+	width = hz.width,
+	height = block
+}
+bottomBar = {
+	x = 0,
+	y = hz.y + 2 * block,
+	width = screenDimX,
+	height = block
+}
 vc = {
-	x = screenDimX - 90,
+	x = screenDimX - block,
 	y = 0,
-	width = 25,
+	width = block,
 	height = va.height
 }
 vd = { 
-	x = 40 + hh.width - 25,
+	x = ha.x + ha.width - block,
 	y = hh.y,
-	width = 25, 
-	height = 150
-
+	width = block, 
+	height = 3 * block
 }
 ve = {
-	x = he.x + 50 + he.width,
+	x = he.x + block + he.width,
 	y = he.y,
-	width = 25,
-	height = 250
+	width = block,
+	height = 6 * block
 }
 vf = {
 	x = vb.x,
 	y = he.y,
-	width = 25,
-	height = 150
+	width = block,
+	height = 3 * block
 }
 vg = {
-	x = screenDimX - ve.x - 25,
-	y = hf.y,
-	width = 25,
+	x = hg.x - (2 * block),
+	y = hg.y,
+	width = block,
 	height = ve.height
 }
 vh = {
 	x = hg.x,
 	y = vd.y,
-	width = 25,
+	width = block,
 	height = vd.height
 }
+vi = {
+	x = vd.x,
+	y = hn.y,
+	width = block,
+	height = vd.height
+}
+vj = {
+	x = ve.x,
+	y = vi.y,
+	width = block,
+	height = vd.height
+}
+vk = {
+	x = vf.x,
+	y = hq.y,
+	width = block,
+	height = vf.height
+}
+vl = {
+	x = vg.x,
+	y = vj.y,
+	width = block,
+	height = vd.height
+}
+vm = {
+	x = vh.x,
+	y = vi.y,
+	width = block,
+	height = vd.height
+}
+vn = {
+	x = va.x,
+	y = vi.y + 2 * block,
+	width = block,
+	height = 9 * block
+}
+vo = {
+	x = vi.x,
+	y = hs.y,
+	width = block,
+	height = 3 * block
+}
+vp = {
+	x = vk.x,
+	y = hx.y,
+	width = block,
+	height = 3 * block
+}
+vq = {
+	x = vm.x,
+	y = vo.y,
+	width = block,
+	height = 3 * block
+}
+vr = {
+	x = vj.x,
+	y = hw.y,
+	width = block,
+	height = 3 * block
+}
+vs = {
+	x = vl.x,
+	y = vr.y,
+	width = block,
+	height = 3 * block
+}
+vt = {
+	x = vc.x,
+	y = vn.y,
+	width = block,
+	height = vn.height
+}
+b1 = {
+	x = hf.x, 
+	y = hl.y - block,
+	width = block,
+	height = 4 * block
+}
+b2 = {
+	x = hf.x, 
+	y = b1.y ,
+	width = 3 * block,
+	height = block
+}
+b3 = {
+	x = hc.x, 
+	y = b1.y,
+	width = b2.width,
+	height = block
+}
+b4 = {
+	x = hc.x + 2 * block, 
+	y = b1.y,
+	width = block,
+	height = b1.height
+}
+b5 = {
+	x = hf.x, 
+	y = hn.y,
+	width = hq.width,
+	height = block
+}
 
-
-
-
-rectangles = {va=va,vb=vb,vc=vc,vd=vd,ve=ve,vf=vf,vg=vg,vh=vh,ha=ha,
-hb=hb,hc=hc,hd=hd,he=he, hf=hf, hg=hg, hh=hh, hk=hk, hl=hl, hm=hm, hi=hi, 
-hj=hj, hn=hn, ho=ho}
+rectangles = {va=va,vb=vb,vc=vc,vd=vd,ve=ve,vf=vf, vg=vg, vh=vh, vi=vi, vj=vj, vk=vk, 
+vl=vl, vm=vm, vn=vn, vo=vo, vp=vp, vq=vq, vr=vr, vs=vs, vt=vt, ha=ha,
+hb=hb, hc=hc, hd=hd, he=he, hf=hf, hg=hg, hh=hh, hi=hi, hj=hj, hk=hk, hl=hl, hm=hm,  
+hn=hn, ho=ho, hp=hp, hq=hq, hr=hr, hs=hs, ht=ht, hu=hu, hv=hv, hw=hw, hx=hx, hy=hy,
+hz=hz, haa=haa, topBar=topBar, bottomBar=bottomBar, b1=b1, b2=b2, b3=b3, b4=b4, b5=b5}
 
 l = love.graphics.newImage("8bit_left.jpg");
 r = love.graphics.newImage("8bit_right.jpg");
@@ -177,78 +350,46 @@ d = love.graphics.newImage("8bit_down.jpg");
 
 pacman = {
 	sprite = r,
-	x = 700,
-	y = 700,
+	x = 25,
+	y = 25,
 	xvel = 0,
 	yvel = 0,
 	angle = 0
 }
-
-moveL = true
-moveR = true
-moveU = true
-moveD = true
-
-function leftDetect(x, ytop, ybot)
-	currYtop = pacman.y
-	currYbot = pacman.y + 36
-	fire1 = currYtop
-	fire2 = ytop
-	fire3 = ybot
-	if ((currYbot >= ytop and currYbot <= ybot) or (currYtop >= ytop and currYtop <= ybot)) and math.abs(x-pacman.x) <= 5 then
-		moveR = false
-	else
-		moveR = true
+fire = 0
+fire1 = 0
+function overlap(corner, rect)
+	x = corner[1]
+	y = corner[2]
+	topLX = rect.x
+	topLY = rect.y
+	botRX = rect.x + rect.width
+	botRY = rect.y + rect.height
+	if x > topLX and x < botRX and y > topLY and y < botRY then
+		fire = rect.x
+		fire1 = rect.y
+		return true
 	end
+	return false
 end
 
-function rightDetect(x, ytop, ybot)
-	currYtop = pacman.y
-	currYbot = pacman.y + 36
-	if ((currYbot >= ytop and currYbot <= ybot) or (currYtop >= ytop and currYtop <= ybot)) and math.abs(x-pacman.x) <= 5 then
-		moveL = false
-	else
-		moveL = true
+function noCollision(nextx, nexty)
+	corners = {
+		topL = {nextx, nexty}, 
+		topR = {nextx + block, nexty}, 
+		botL = {nextx, nexty + block}, 
+		botR = {nextx + block, nexty + block},
+		topmid = {nextx + block/2, nexty},
+		botmid = {nextx + block/2, nexty + block},
+		leftmid = {nextx, nexty + block/2},
+		rightmid = {nextx + block, nexty + block/2}
+	}
+	for _, rect in pairs(rectangles) do
+		for _, corner in pairs(corners) do
+			if overlap(corner, rect) then return false end
+		end
 	end
-end
-
-function topDetect(y, xleft, xright)
-	currXleft = pacman.x
-	currXright = pacman.x + 43.2
-	if ((currXleft >= xleft and currXleft <= xright) or (currXright >= xleft and currXright <= xright)) and math.abs(y-pacman.y) <= 5 then
-		moveD = false
-	else
-		moveD = true
-	end
-end
-
-function botDetect(y, xleft, xright)
-	currXleft = pacman.x
-	currXright = pacman.x + 43.2
-	if ((currXleft >= xleft and currXleft <= xright) or (currXright >= xleft and currXright <= xright)) and math.abs(y-pacman.y) <= 5 then
-		moveU = false
-	else
-		moveU = true
-	end
-end
-
-function collisionDetect(rectangle)
-	tlx = rectangle.x -- top left x value
-	tly = rectangle.y -- top left y value
-	brx = rectangle.x + rectangle.width -- bottom right x val
-	bry = rectangle.y + rectangle.height -- bottom right y val
-	if moveR then
-		leftDetect(tlx, tly, bry)
-	end
-	if moveL then
-		rightDetect(tlx, tly, bry)
-	end
-	if moveU then
-		botDetect(bry, tlx, brx)
-	end
-	if moveD then
-		topDetect(bry, tlx, brx)
-	end
+	return true
 end
 
 function love.load()
@@ -258,54 +399,43 @@ function love.load()
 end
 
 function love.update(dt)
-	for i,v in pairs(rectangles) do
-		collisionDetect(v)
+	timeElapsed = timeElapsed + dt;
+	if timeElapsed > 0.1 then
+		timeElapsed = 0
+		if love.keyboard.isDown(dir.up) then
+			pacman.xvel = 0;
+			pacman.yvel = -vel;
+			pacman.sprite = u;
+		end
+		if love.keyboard.isDown(dir.left) then
+			pacman.yvel = 0;
+			pacman.xvel = -vel;
+			pacman.sprite = l;
+		end
+		if love.keyboard.isDown(dir.right) then
+			pacman.yvel = 0;
+			pacman.xvel = vel;
+			pacman.sprite = r;
+		end
+		if love.keyboard.isDown(dir.down) then
+			pacman.xvel = 0;
+			pacman.yvel = vel;
+			pacman.sprite = d;
+		end
+
+		if noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
+		then
+			pacman.x = pacman.x + pacman.xvel;
+			pacman.y = pacman.y + pacman.yvel;
+		end
 	end
-	if love.keyboard.isDown(dir.up) then
-		pacman.xvel = 0;
-		pacman.yvel = -5;
-		pacman.sprite = u;
-	end
-	if love.keyboard.isDown(dir.left) then
-		pacman.yvel = 0;
-		pacman.xvel = -5;
-		pacman.sprite = l;
-	end
-	if love.keyboard.isDown(dir.right) then
-		pacman.yvel = 0;
-		pacman.xvel = 5;
-		pacman.sprite = r;
-	end
-	if love.keyboard.isDown(dir.down) then
-		pacman.xvel = 0;
-		pacman.yvel = 5;
-		pacman.sprite = d;
-	end
-	if love.keyboard.isDown("p") then
-		moveL = false
-		moveR = false
-		moveU = false
-		moveD = false
-	end
-	if (moveU and pacman.yvel < 0) or (moveD and pacman.yvel > 0) then
-		pacman.y = pacman.y + pacman.yvel;
-	end
-	if (moveR and pacman.xvel > 0) or (moveL and pacman.xvel < 0) then
-		pacman.x = pacman.x + pacman.xvel;
-	end
-	moveL = true
-	moveR = true
-	moveU = true
-	moveD = true
 end
 
 function love.draw()
-	love.graphics.print(tostring(fire1), 700, 670)
-	love.graphics.print(tostring(fire2), 800, 670)
-	love.graphics.print(tostring(fire3), 900, 670)
-	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 0.09, 0.1)
+	love.graphics.print(tostring(fire), 500, 600)
+	love.graphics.print(tostring(fire1), 660, 600)
+	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
 	love.graphics.setColor(0, 128, 128)
-	love.graphics.rectangle('fill', topBar.x, topBar.y, topBar.width, topBar.height)
 	for i, v in pairs(rectangles) do
 		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
 	end
