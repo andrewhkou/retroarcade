@@ -1,7 +1,7 @@
 screenDimX = 725
 screenDimY = 725
 block = 25
-vel = block/2
+vel = block/10
 timeElapsed = 0
 lives = 3
 
@@ -162,7 +162,7 @@ end
 
 function love.update(dt)
 	timeElapsed = timeElapsed + dt
-	if timeElapsed > 0.075 then
+	if timeElapsed > 0.01 then
 		timeElapsed = 0
 		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.up2) then
 			pacman.xvel = 0
