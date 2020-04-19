@@ -29,7 +29,7 @@ function love.load()
     joysticks = love.joystick.getJoysticks();
     if (#joysticks > 1) then
         joystick1 = joysticks[0];
-        joystick2 = joystick[1];
+        joystick2 = joysticks[1];
     end
     mainMenuHelp = false;
     mainMenuSingle = true;
