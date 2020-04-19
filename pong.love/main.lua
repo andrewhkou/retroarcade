@@ -20,13 +20,13 @@ paddleWidth = 20
 paddleHeight = 70
 
 paddle1 = {
-    x = 50,
+    x = 75,
     y = (screenDimY / 2) -  (paddleHeight / 2);
     vel= 0;
 }
 
 paddle2 = {
-    x = screenDimX - 50 - paddleWidth,
+    x = screenDimX - 75 - paddleWidth,
     y = (screenDimY / 2) -  (paddleHeight / 2), 
     vel = 0;
 }
@@ -56,29 +56,29 @@ function getPaddle2UpperY()
 end
 
 function detectPaddle1Collision(ball)
-    if paddle1.x + paddleWidth - ballXBorder(ball, "left") >= 0 and ball.y <= getPaddle1LowerY() and ball.y >= getPaddle1UpperY() then
+    if paddle1.x + paddleWidth - ballXBorder(ball, "left") >= 0 and ball.y <= getPaddle1LowerY() and ball.y >= getPaddle1UpperY() + 2 then
         return true
     end
     return false
 end
 
 function detectPaddle2Collision(ball)
-    if paddle2.x - ballXBorder(ball, "right") <= 0 and ball.y <= getPaddle2LowerY() and ball.y >= getPaddle2UpperY() then
+    if paddle2.x - ballXBorder(ball, "right") <= 0 and ball.y <= getPaddle2LowerY() and ball.y >= getPaddle2UpperY() + 2 then
         return true
     end
     return false
 end
 
 function resetBall1()
-    ball.x = paddle1.x + paddleWidth + ball.radius + 5
-    ball.y = paddle1.y + paddleHeight/2
+    ball.x = screenDimX/2
+    ball.y = screenDimY/2
     ball.velX = 5
     ball.velY = 0
 end
 
 function resetBall2()
-    ball.x = paddle2.x - ball.radius - 5
-    ball.y = paddle2.y + paddleHeight/2
+    ball.x = screenDimX/2
+    ball.y = screenDimY/2
     ball.velX = -5
     ball.velY = 0
 end
@@ -133,6 +133,55 @@ function love.load()
     love.window.setTitle("Pong");
     love.window.setMode(screenDimX, screenDimY)
     love.graphics.setNewFont(40)
+    font = love.graphics.newFont("VT323-Regular.ttf", 130);
+    love.graphics.setFont(font);
+    gameOver2PNG = love.graphics.newImage("GameOver2.png")
+
+    function newGame() 
+        totalTimeElapsed = 0;
+        score = 0;
+        score1 = 0;
+        score2 = 0;
+        timeElapsed = 0;
+        paddleSpeed = 5;
+        gameOver2 = 0;
+
+        player1 = {
+            points = 0;
+        }
+
+        player2 = {
+            points = 0;
+        }
+        paddle1 = {
+            x = 75,
+            y = (screenDimY / 2) -  (paddleHeight / 2);
+            vel= 0;
+        }
+        
+        paddle2 = {
+            x = screenDimX - 75 - paddleWidth,
+            y = (screenDimY / 2) -  (paddleHeight / 2), 
+            vel = 0;
+        }
+        
+        ball = {
+            x = 100,
+            y = 100,
+            velX = 7,
+            velY = -1,
+            radius = 8
+        }
+        resetBall1();
+    end
+
+    function gameOverMenu()
+        if (love.keyboard.isDown("return")) then
+            start = true;
+            newGame();
+        end
+    end
+
 end
 
 function love.update(dt) 
@@ -168,13 +217,24 @@ function love.update(dt)
     
 
     -- handles ball movement
+    if player1.points == 10 or player2.points == 10 then
+        ball.velX = 0
+        ball.velY = 0
+    end
+
     if ballXBorder(ball, "left") <= 0 then
         incrementPoints(player2)
+        if player2.points == 10 then
+            gameOver2 = 2
+        end
         resetBall1()
     end
 
     if ballXBorder(ball, "right") >= screenDimX then
         incrementPoints(player1)
+        if player1.points == 10 then
+            gameOver2 = 1
+        end
         resetBall2()
     end
 
@@ -204,4 +264,21 @@ function love.draw()
 
     love.graphics.print(player1.points, screenDimX/2 - 100, 50)
     love.graphics.print(player2.points, screenDimX/2 + 75, 50)
+    if (gameOver2 == 1) then
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameOver2PNG, 0, 0)
+        love.graphics.print("TWO", 910, 73);
+        love.graphics.print(score1, 760, 995, 0, .5, .5);
+        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172)
+        gameOverMenu();
+    elseif (gameOver2 == 2) then
+        love.graphics.setColor(1, 1, 1);
+        love.graphics.draw(gameOver2PNG, 0, 0)
+        love.graphics.print("ONE", 910, 73);
+        love.graphics.print(score1, 760, 995, 0, .5, .5);
+        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172)
+        gameOverMenu();
+end
 end
