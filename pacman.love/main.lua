@@ -1,9 +1,16 @@
 screenDimX = 725
-screenDimY = 725
+screenDimY = 625
 block = 25
 vel = block/10
 timeElapsed = 0
 lives = 3
+score = 0
+highScore = 0
+totalDots = 0
+dotsEaten = 0
+scared = false
+scaredStart = 0
+gameStart = nil
 
 require("walls") -- import walls
 require("dots") -- import dots
@@ -19,15 +26,17 @@ dir = {
 	right2 = "right"
 }
 
-l = love.graphics.newImage("8bit_left.jpg")
-r = love.graphics.newImage("8bit_right.jpg")
-u = love.graphics.newImage("8bit_up.jpg")
-d = love.graphics.newImage("8bit_down.jpg")
+l = love.graphics.newImage("images/8bit_left.jpg")
+r = love.graphics.newImage("images/8bit_right.jpg")
+u = love.graphics.newImage("images/8bit_up.jpg")
+d = love.graphics.newImage("images/8bit_down.jpg")
+scaredPic = love.graphics.newImage("images/scaredGhost.jpg")
+scaredPicWhite = love.graphics.newImage("images/whiteGHost.jpg") -- flashing ghost when timer is about to end
 
 pacman = {
 	sprite = r,
-	x = 25,
-	y = 25,
+	x = screenDimX / 2 - block / 2,
+	y = block * 16,
 	xvel = 0,
 	yvel = 0,
 	prevXvel = 0,
@@ -35,29 +44,109 @@ pacman = {
 	angle = 0
 }
 
+redGhost = {
+	sprite = love.graphics.newImage("images/redGhost.png"),
+	x = bgate.x,
+	y = bgate.y + block,
+	xvel = 0,
+	yvel = 0,
+}
+
+greenGhost = {
+	sprite = love.graphics.newImage("images/greenGhost.png"),
+	x = redGhost.x,
+	y = redGhost.y + block,
+	xvel = 0,
+	yvel = 0,
+}
+
+yellowGhost = {
+	sprite = love.graphics.newImage("images/yellowGhost.png"),
+	x = redGhost.x + block,
+	y = redGhost.y,
+	xvel = 0,
+	yvel = 0,
+}
+
+pinkGhost = {
+	sprite = love.graphics.newImage("images/pinkGhost.png"),
+	x = redGhost.x + block,
+	y = redGhost.y + block,
+	xvel = 0,
+	yvel = 0,
+}
+ghosts = {redGhost, greenGhost, yellowGhost, pinkGhost}
+
 allDots = {}
 
 function intToIndex(x, y)
 	return tostring(x) .. "," .. tostring(y)
 end
 
-function addDot(r, c)
+function drawScared(image, ratio)
+	love.graphics.draw(image, redGhost.x, redGhost.y, 0, ratio, ratio)
+	love.graphics.draw(image, greenGhost.x, greenGhost.y, ratio, ratio)
+	love.graphics.draw(image, yellowGhost.x, yellowGhost.y, 0, ratio, ratio)
+	love.graphics.draw(image, pinkGhost.x, pinkGhost.y, 0, ratio, ratio)
+end
+
+function drawGhosts()
+	time = os.time()
+	if scared and time - scaredStart <= 10 then 
+		if time  - scaredStart > 5 then -- ghosts flash blue/white when power up timer is ending
+			if time % 2 == 0 then
+				drawScared(scaredPic, 25/320)
+			else
+				drawScared(scaredPicWhite, 25/600)
+			end
+		else
+			drawScared(scaredPic, 25/320)
+		end
+	else
+		scared = false
+		love.graphics.draw(redGhost.sprite, redGhost.x, redGhost.y, 0, 25/360, 25/360)
+		love.graphics.draw(greenGhost.sprite, greenGhost.x, greenGhost.y, 25/360, 25/360)
+		love.graphics.draw(yellowGhost.sprite, yellowGhost.x, yellowGhost.y, 0, 25/360, 25/360)
+		love.graphics.draw(pinkGhost.sprite, pinkGhost.x, pinkGhost.y, 0, 25/360, 25/360)
+	end
+end
+
+function addDot(r, c, super) -- adds normal dot or super dot
+	totalDots = totalDots + 1
 	x = block * (c - 1)
 	y = block * (r - 1)
 	circle = {
-		x = x + block / 2,
-		y = y + block / 2,
-		radius = 2.5
-	}
+			x = x + block / 2,
+			y = y + block / 2,
+			radius = 2.5
+		}
+	if super then circle["radius"] = 6 end
 	allDots[intToIndex(x + block/2, y + block/2)] = circle
 end
 
-function initialDotAdd()
-	for row = 1, 29, 1 do
-		for col = 1, 29, 1 do
-			if dots[row][col] == 1 then addDot(row, col) end
+function initialDotAdd() -- add all dots into allDots array
+	for row = 1, 22, 1 do
+		for col = 1, screenDimX / block, 1 do
+			if dots[row][col] ~= 0 then addDot(row, col, dots[row][col] == 2) end
 		end
 	end
+end
+
+function updateScore(super)
+	if super then 
+		score = score + 100
+	else 
+		score = score + 10
+	end
+	dotsEaten = dotsEaten + 1
+	if score > highScore then
+		highScore = score
+	end
+end
+
+function superDot() -- when power up is eaten 
+	scared = true
+	scaredStart = os.time()
 end
 
 function eatDot() -- checks collision with dots and "eats" the dots
@@ -71,9 +160,12 @@ function eatDot() -- checks collision with dots and "eats" the dots
 	for _, dot in pairs(allDots) do
 		centerx = dot.x
 		centery = dot.y
+		super = dot.radius == 6
 		for _, edge in pairs(edges) do
 			if edge[1] == centerx and edge[2] == centery then
+				if super then superDot() end
 				allDots[intToIndex(centerx, centery)] = nil
+				updateScore(super)
 				break
 			end
 		end
@@ -134,30 +226,35 @@ function wallCollisionUpdate(noCollide, dir)
 	end
 end
 
-function updateDrawings()
-	love.graphics.setColor(247, 255, 0) -- draw pacman
-	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
-
-	for i = 1, lives, 1 do -- draw lives
-		love.graphics.draw(r, 50 * (i - 1) + 15, screenDimY - 100, 0, 40/360, 40/360)
+function winChecker()
+	if dotsEaten == totalDots then
+		love.graphics.setNewFont("coolfont.ttf", 50)
+		love.graphics.print("You Win!", screenDimX / 2 - 5 * block, screenDimY / 2 - 2 * block)
+		love.graphics.setNewFont("coolfont.ttf", 22)
 	end
+end
 
-	love.graphics.setColor(0, 0, 255)
-	for _, v in pairs(rectangles) do -- draw walls
-		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
+function updatePacman()
+	if noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel) then
+			pacman.x = pacman.x + pacman.xvel;
+			pacman.y = pacman.y + pacman.yvel;
+			sideScreenTeleport()
 	end
+	eatDot()
+end
 
-	love.graphics.setColor(255, 255, 255) 
-	for _, circle in pairs(allDots) do -- draw dots
-		love.graphics.circle('fill', circle.x, circle.y, circle.radius)
-	end
+function updateGhosts()
+	-- if os.time() - gameStart > 2 then
+		
+	-- end
 end
 
 function love.load()
     love.window.setTitle("Pacman")
     love.window.setMode(screenDimX, screenDimY)
-    love.graphics.setNewFont(40)
+    love.graphics.setNewFont("coolfont.ttf", 22)
     initialDotAdd()
+    gameStart = os.time()
 end
 
 function love.update(dt)
@@ -188,18 +285,39 @@ function love.update(dt)
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, d)
 		end
-
-		if noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel) then
-			pacman.x = pacman.x + pacman.xvel;
-			pacman.y = pacman.y + pacman.yvel;
-			sideScreenTeleport()
-		end
-		eatDot()
+		updatePacman()
+		updateGhosts()
 	end
 end
 
 function love.draw()
-	love.graphics.print(tostring(pacman.x), 500, 600)
-	love.graphics.print(tostring(pacman.y), 620, 600)
-	updateDrawings()
+	love.graphics.setColor(247, 255, 0) -- draw pacman
+	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
+
+	for i = 1, lives, 1 do -- draw lives on the bottom left
+		love.graphics.draw(r, 65 * (i - 1) + 25, screenDimY - block * 2.5, 0, 50/360, 50/360)
+	end
+
+	for item, v in pairs(rectangles) do -- draw walls
+		love.graphics.setColor(0, 0, 255)
+		if item == "bgate" then love.graphics.setColor(169,169,169) end
+		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
+	end
+
+	love.graphics.setColor(255, 255, 255) 
+	for _, circle in pairs(allDots) do -- draw dots
+		love.graphics.circle('fill', circle.x, circle.y, circle.radius)
+	end
+
+	-- draw ghosts
+	drawGhosts()
+
+	-- draw score
+	love.graphics.setColor(255, 0, 0) 
+	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, screenDimY - block * 2.75)
+	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, screenDimY - block * 1.5)
+	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, screenDimY - block * 2.75)
+	love.graphics.print(tostring(highScore), screenDimX - 6 * block, screenDimY - block * 1.5)
+
+	winChecker()
 end
