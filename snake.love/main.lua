@@ -38,7 +38,7 @@ function love.load()
 
     function joystick1Up()
         if (#joysticks > 1) then
-            if (joystick1.getAxis(1) > .3) then
+            if (love.joystick.getAxis(joystick1, 1) > .3) then
                 return true;
             end
         end
@@ -47,7 +47,7 @@ function love.load()
 
     function joystick1Down()
         if (#joysticks > 1) then
-            if (joystick1.getAxis(1) < -.3) then
+            if (love.joystick.getAxis(joystick1, 1) < -.3) then
                 return true;
             end
         end
@@ -56,7 +56,7 @@ function love.load()
 
     function joystick1Left()
         if (#joysticks > 1) then
-            if (joystick1.getAxis(2) < -.3) then
+            if (love.joystick.getAxis(joystick1, 2) < -.3) then
                 return true;
             end
         end
@@ -65,7 +65,7 @@ function love.load()
 
     function joystick1Right()
         if (#joysticks > 1) then
-            if (joystick1.getAxis(2) > .3) then
+            if (love.joystick.getAxis(joystick1, 2) > .3) then
                 return true;
             end
         end
