@@ -26,35 +26,76 @@ function love.load()
     down2 = "down";
     left2 = "left";
     enter = "return"
+    joysticks = love.joystick.getJoysticks();
+    if (#joysticks > 1) then
+        joystick1 = joysticks[1];
+        joystick2 = joysticks[2];
+    end
     mainMenuHelp = false;
     mainMenuSingle = true;
     mainMenuTwo = false;
     mainMenuBack = false;
 
+    function joystick1Up()
+        if (#joysticks > 1) then
+            if (love.joystick.getAxis(joystick1, 1) > .3) then
+                return true;
+            end
+        end
+        return false;
+    end
+
+    function joystick1Down()
+        if (#joysticks > 1) then
+            if (love.joystick.getAxis(joystick1, 1) < -.3) then
+                return true;
+            end
+        end
+        return false;
+    end
+
+    function joystick1Left()
+        if (#joysticks > 1) then
+            if (love.joystick.getAxis(joystick1, 2) < -.3) then
+                return true;
+            end
+        end
+        return false;
+    end
+
+    function joystick1Right()
+        if (#joysticks > 1) then
+            if (love.joystick.getAxis(joystick1, 2) > .3) then
+                return true;
+            end
+        end
+        return false;
+    end
+
     function mainMenuOptions()
         if (mainMenuSingle) then
-            if (love.keyboard.isDown(down1)) then
+            if (love.keyboard.isDown(down1) or joystick1Down()) then
                 mainMenuSingle = false;
                 mainMenuTwo = true;
             end
         elseif (mainMenuTwo) then
-            if (love.keyboard.isDown(up1)) then
+            if (love.keyboard.isDown(up1) or joystick1Up()) then
                 mainMenuSingle = true;
                 mainMenuTwo = false;
-            elseif (love.keyboard.isDown(left1)) then
+            elseif (love.keyboard.isDown(left1) or joystick1Left()) then
                 mainMenuHelp = true;
                 mainMenuTwo = false;
-            elseif (love.keyboard.isDown(right1)) then
+            elseif (love.keyboard.isDown(right1) or joystick1Right()) then
                 mainMenuTwo = false;
                 mainMenuBack = true;
             end
         elseif (mainMenuHelp) then
-            if (love.keyboard.isDown(right1)) then
+            if (love.keyboard.isDown(right1) or joystick1Right()) then
                 mainMenuHelp = false;
                 mainMenuTwo = true;
             end
         elseif (mainMenuBack) then
-            if (love.keyboard.isDown(left1)) then
+            if (love.keyboard.isDown(left1) or joystick1Left()) then
                 mainMenuBack = false;
                 mainMenuTwo = true;
             end
@@ -154,19 +195,19 @@ function love.load()
     end
 
     function keyboardPlayer1()
-        if (love.keyboard.isDown(up1)) then
+        if (love.keyboard.isDown(up1) or (joystick1Up())) then
             if (direction1 ~= 1) then
                 direction1 = 3;
             end
-        elseif (love.keyboard.isDown(right1)) then
+        elseif (love.keyboard.isDown(right1) or joystick1Right()) then
             if (direction1 ~= 4) then
                 direction1 = 2;
             end
-        elseif (love.keyboard.isDown(down1)) then
+        elseif (love.keyboard.isDown(down1) or joystick1Down()) then
             if (direction1 ~= 3) then
                 direction1 = 1;
             end
-        elseif (love.keyboard.isDown(left1)) then
+        elseif (love.keyboard.isDown(left1) or joystick1Left()) then
             if (direction1 ~= 2) then
                 direction1 = 4;
             end
@@ -377,6 +418,9 @@ function love.load()
 end
 
 function love.update(dt)
+    if (love.keyboard.isDown('escape')) then
+        love.event.push("quit");
+    end
     timeElapsed = timeElapsed + dt;
     totalTimeElapsed = totalTimeElapsed + 1;
     if (singlePlayer) then
