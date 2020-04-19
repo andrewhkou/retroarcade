@@ -5,8 +5,20 @@ screenDimX = 1280;
 screenDimY = 720;
 local keymap1 = {up="w",down="s",left="a",right="d",punch="g"}
 local keymap2 = {up="up",down="down",left="left",right="right",punch=";"}
-fighter1 = Fighter.new("jon xu", 200, 400, keymap1, "right", screenDimX, 400)
-fighter2 = Fighter.new("alan gill", 1000, 400, keymap2, "left", screenDimX, 400)
+
+player1Stance1 = love.graphics.newImage("ryanstance1.png")
+player1Stance2 = love.graphics.newImage("ryanstance2.png")
+player1Punch = love.graphics.newImage("ryanpunch.png")
+
+player1Anims = {
+    stance1 = player1Stance1,
+    stance2 = player1Stance2,
+    punch = player1Punch
+}
+
+fighter1 = Fighter.new("jon xu", 200, 400, keymap1, "right", screenDimX, 400, player1Anims)
+fighter2 = Fighter.new("alan gill", 1000, 400, keymap2, "left", screenDimX, 400, player1Anims)
+
 
 game = Fight.new(fighter1, fighter2)
 isGoing = true
