@@ -9,7 +9,7 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.velY = 0
     f.x = x
     f.y = y
-    f.width = 100
+    f.width = 200
     f.height = 200
     f.hitboxX = f.width/2
     f.hitboxY = f.height/2
@@ -110,7 +110,7 @@ function Fighter:update(dt)
         self.animationCounter = 0
     end
     if self.punchCounter == 0 then 
-        self.punchCounter = 5 
+        self.punchCounter = 10
         self.punch = false
     end
     if self.punchCounter > 0 then
@@ -118,10 +118,13 @@ function Fighter:update(dt)
     end
     if not love.keyboard.isDown(self.keyMap['right']) then
         self.walkRight = false
-        self.animationCounter = 0
+        
     end
     if not love.keyboard.isDown(self.keyMap['left']) then
         self.walkLeft = false
+    end
+    if not love.keyboard.isDown(self.keyMap['left']) and not love.keyboard.isDown(self.keyMap['right']) then
+        self.animationCounter = 0
     end
     if love.keyboard.isDown(self.keyMap['right']) then
         self.walkRight = true;
@@ -129,6 +132,7 @@ function Fighter:update(dt)
     end
     if love.keyboard.isDown(self.keyMap['left']) then
         self.walkLeft = true
+        self.animationCounter = self.animationCounter + 1
     end
     if not self.jumpUp and not self.jumpFall and love.keyboard.isDown(self.keyMap['up']) then
         self.velY = 25
@@ -154,21 +158,35 @@ end
 function Fighter:keypressed(key, unicode)
     if key == self.keyMap['punch'] then
         self.punch = true
-        self.punchCounter = 5;
+        self.punchCounter = 10;
     end
 end
 
 function Fighter:animate(dt)
     if self.punch then
-        love.graphics.draw(self.animations.punch, self.x-100, self.y, 0, 0.1, 0.1)
+        if self.direction == "right" then
+            love.graphics.draw(self.animations.punchright, self.x-100, self.y, 0, 0.1, 0.1)
+        else
+            love.graphics.draw(self.animations.punchleft, self.x-100, self.y, 0, 0.1, 0.1)
+        end
     elseif self.walkRight then
         if self.animationCounter < 10 then
-            love.graphics.draw(self.animations.stance1, self.x-100, self.y, 0, 0.1, 0.1)
+            love.graphics.draw(self.animations.stance1right, self.x-100, self.y, 0, 0.1, 0.1)
         else
-            love.graphics.draw(self.animations.stance2, self.x-100, self.y, 0, 0.1, 0.1)
+            love.graphics.draw(self.animations.stance2right, self.x-100, self.y, 0, 0.1, 0.1)
+        end
+    elseif self.walkLeft then
+        if self.animationCounter < 10 then
+            love.graphics.draw(self.animations.stance2left, self.x-100, self.y, 0, 0.1, 0.1)
+        else
+            love.graphics.draw(self.animations.stance1left, self.x-100, self.y, 0, 0.1, 0.1)
         end
     else
-        love.graphics.draw(self.animations.stance1, self.x-100, self.y, 0, 0.1, 0.1)
+        if self.direction == "right" then
+            love.graphics.draw(self.animations.stance1right, self.x-100, self.y, 0, 0.1, 0.1)
+        else 
+            love.graphics.draw(self.animations.stance2left, self.x-100, self.y, 0, 0.1, 0.1)
+        end
     end
     -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
