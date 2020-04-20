@@ -1,3 +1,4 @@
+onComputer = true
 screenDimX = 725
 screenDimY = 625
 block = 25
@@ -24,6 +25,7 @@ gameStart = os.time()
 
 require("walls") -- import walls
 require("dots") -- import dots
+require("joystick") -- sense joystick input
 
 dir = {
 	up = "w",
@@ -480,29 +482,34 @@ function love.update(dt)
 			or love.keyboard.isDown(dir.left2) or love.keyboard.isDown(dir.right2) then
 				gameEndRestart()
 			end
+		for i = 1, #joysticks, 1 do
+			if joysticks[i]() then 
+				gameEndRestart()
+			end
+		end
 		timeElapsed = 0
 	end
 	if timeElapsed > 0.01 then
 		timeElapsed = 0
-		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.up2) then
+		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.up2) or joystick1Up() or joystick2Up() then
 			pacman.xvel = 0
 			pacman.yvel = -vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, u)
 		end
-		if love.keyboard.isDown(dir.left) or love.keyboard.isDown(dir.left2) then
+		if love.keyboard.isDown(dir.left) or love.keyboard.isDown(dir.left2) or joystick1Left() or joystick2Left() then
 			pacman.yvel = 0
 			pacman.xvel = -vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, l)
 		end
-		if love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.right2) then
+		if love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.right2) or joystick1Right() or joystick2Right() then
 			pacman.yvel = 0
 			pacman.xvel = vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, r)
 		end
-		if love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.down2) then
+		if love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.down2) or joystick1Down() or joystick2Down() then
 			pacman.xvel = 0
 			pacman.yvel = vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
