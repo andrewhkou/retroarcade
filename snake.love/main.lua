@@ -1,10 +1,16 @@
 function love.load()
+    onComputer = false;
     mainMenuPNG = love.graphics.newImage("Snake_Main_Menu.png")
     gameMenu1PNG = love.graphics.newImage("Game_Screen_1.png")
     gameMenu2PNG = love.graphics.newImage("Game_Screen_2.png")
     gameOver1PNG = love.graphics.newImage("GameOver1.png")
     gameOver2PNG = love.graphics.newImage("GameOver2.png")
+    helpMenuPNG = love.graphics.newImage("Help_Menu.png")
     font = love.graphics.newFont("VT323-Regular.ttf", 130);
+    selectWAV = love.audio.newSource("Select.wav", "static");
+    optionWAV = love.audio.newSource("Option.wav", "static");
+    eatWAV = love.audio.newSource("Eat.wav", "static");
+    gameOverWAV = love.audio.newSource("GameOver.wav", "static");
     love.graphics.setFont(font);
     screenDimX = 1920;
     screenDimY = 1200;
@@ -26,96 +32,166 @@ function love.load()
     down2 = "down";
     left2 = "left";
     enter = "return"
+    enterButton = 14;
     joysticks = love.joystick.getJoysticks();
-    if (#joysticks > 1) then
-        joystick1 = joysticks[1];
-        joystick2 = joysticks[2];
-    end
+    joystick1 = joysticks[1];
+    joystick2 = joysticks[2];
     mainMenuHelp = false;
     mainMenuSingle = true;
     mainMenuTwo = false;
     mainMenuBack = false;
 
     function joystick1Up()
-        if (#joysticks > 1) then
-            if (love.joystick.getAxis(joystick1, 1) > .3) then
-                return true;
-            end
+        if ((not onComputer) and joystick1.getAxis(joystick1, 2) < - 0.5) then
+            return true;
         end
         return false;
     end
 
     function joystick1Down()
-        if (#joysticks > 1) then
-            if (love.joystick.getAxis(joystick1, 1) < -.3) then
-                return true;
-            end
+        if ((not onComputer) and joystick1.getAxis(joystick1, 2) > 0.5) then
+            return true;
         end
         return false;
     end
 
     function joystick1Left()
-        if (#joysticks > 1) then
-            if (love.joystick.getAxis(joystick1, 2) < -.3) then
-                return true;
-            end
+        if ((not onComputer) and joystick1.getAxis(joystick1, 1) < -0.5) then
+            return true;
         end
         return false;
     end
 
     function joystick1Right()
-        if (#joysticks > 1) then
-            if (love.joystick.getAxis(joystick1, 2) > .3) then
-                return true;
-            end
+        if ((not onComputer) and joystick1.getAxis(joystick1, 1) > 0.5) then
+            return true;
         end
         return false;
     end
 
+    function joystick2Up()
+        if ((not onComputer) and joystick2.getAxis(joystick2, 2) < - 0.5) then
+            return true;
+        end
+        return false;
+    end
+
+    function joystick2Down()
+        if ((not onComputer) and joystick1.getAxis(joystick2, 2) > 0.5) then
+            return true;
+        end
+        return false;
+    end
+
+    function joystick2Left()
+        if ((not onComputer) and joystick2.getAxis(joystick2, 1) < -0.5) then
+            return true;
+        end
+        return false;
+    end
+
+    function joystick2Right()
+        if ((not onComputer) and joystick2.getAxis(joystick2, 1) > 0.5) then
+            return true;
+        end
+        return false;
+    end
+
+    function player1up() 
+        return love.keyboard.isDown(up1) or joystick1Up();
+    end
+
+    function player1down()
+        return love.keyboard.isDown(down1) or joystick1Down();
+    end
+
+    function player1right()
+        return love.keyboard.isDown(right1) or joystick1Right();
+    end
+
+    function player1left()
+        return love.keyboard.isDown(left1) or joystick1Left();
+    end
+
+    function player2up() 
+        return love.keyboard.isDown(up2) or joystick2Up();
+    end
+
+    function player2down()
+        return love.keyboard.isDown(down2) or joystick2Down();
+    end
+
+    function player2right()
+        return love.keyboard.isDown(right2) or joystick2Right();
+    end
+
+    function player2left()
+        return love.keyboard.isDown(left2) or joystick2Left();
+    end
+
+    function enterPressed()
+        return love.keyboard.isDown(enter) or 
+        (not onComputer) and joystick1.isDown(joystick1, enterButton);
+    end
+
+    function helpMenuOptions()
+        if (enterPressed()) then
+            helpMenu = false;
+            mainMenu = true;
+        end
+    end
+
     function mainMenuOptions()
         if (mainMenuSingle) then
-            if (love.keyboard.isDown(down1) or joystick1Down()) then
+            if (player1down()) then
+                love.audio.play(optionWAV);
                 mainMenuSingle = false;
                 mainMenuTwo = true;
             end
         elseif (mainMenuTwo) then
-            if (love.keyboard.isDown(up1) or joystick1Up()) then
+            if (player1up()) then
+                love.audio.play(optionWAV);
                 mainMenuSingle = true;
                 mainMenuTwo = false;
-            elseif (love.keyboard.isDown(left1) or joystick1Left()) then
+            elseif (player1left()) then
+                love.audio.play(optionWAV);
                 mainMenuHelp = true;
                 mainMenuTwo = false;
-            elseif (love.keyboard.isDown(right1) or joystick1Right()) then
+            elseif (player1right()) then
+                love.audio.play(optionWAV);
                 mainMenuTwo = false;
                 mainMenuBack = true;
             end
         elseif (mainMenuHelp) then
-            if (love.keyboard.isDown(right1) or joystick1Right()) then
+            if (player1right()) then
+                love.audio.play(optionWAV);
                 mainMenuHelp = false;
                 mainMenuTwo = true;
             end
         elseif (mainMenuBack) then
-            if (love.keyboard.isDown(left1) or joystick1Left()) then
+            if (player1left()) then
+                love.audio.play(optionWAV);
                 mainMenuBack = false;
                 mainMenuTwo = true;
             end
         end
-        if (love.keyboard.isDown(enter)) then
+        if (enterPressed()) then
+            love.audio.play(selectWAV);
             if (mainMenuSingle) then
                 singlePlayer = true;
             elseif (mainMenuTwo) then
                 twoPlayer = true;
             elseif (mainMenuBack) then
-                -- ANDRE DO THIS LOL
+                love.event.push("quit");
             elseif (mainMenuHelp) then
-                -- HELP MENU
+                helpMenu = true;
             end
             mainMenu = false;
         end
     end
 
     function gameOverMenu()
-        if (love.keyboard.isDown(enter)) then
+        if (enterPressed()) then
             start = true;
             newGame();
         end
@@ -147,6 +223,7 @@ function love.load()
         gameOver2 = 0;
         twoPlayer = false;
         singlePlayer = false;
+        helpMenu = false;
         timeElapsed = 0;
         timeLimit = .1;
         numBlocksX = screenDimX / blockSize;
@@ -303,6 +380,8 @@ function love.load()
         end
         if (not eatenFood(snake1, 1)) then
             table.remove(snake1);
+        else
+            love.audio.play(eatWAV);
         end
     end
     function updateSnake2()
@@ -373,6 +452,8 @@ function love.load()
         end
         if (not eatenFood(snake2, 2)) then
             table.remove(snake2);
+        else
+            love.audio.play(eatWAV);
         end
     end
 
@@ -445,8 +526,13 @@ function love.update(dt)
       end
     end
     if (mainMenu) then
-        if (timeElapsed > timeLimit) then
+        if (timeElapsed > 2 * timeLimit) then
             mainMenuOptions();
+            timeElapsed = 0;
+        end
+    elseif (helpMenu) then
+        if (timeElapsed > 2 * timeLimit) then
+            helpMenuOptions();
             timeElapsed = 0;
         end
     elseif (singlePlayer) then
@@ -487,21 +573,23 @@ function love.update(dt)
 end
 
 function love.draw()
-    --THIS IS THE MAIN MENU. WE SHOULD HAVE RULES AND OPTIONS TO PLAY
     if (mainMenu) then
         love.graphics.setLineWidth(10)
         love.graphics.setColor(1,1,1);
         love.graphics.draw(mainMenuPNG,0,0);
         if (mainMenuSingle) then
-            love.graphics.rectangle("line", 433, 623, 1040.38, 179.64)
+            love.graphics.rectangle("line", 433, 623, 1040.38, 179.64);
         elseif (mainMenuTwo) then
-            love.graphics.rectangle("line", 433, 856, 1040.38, 179.64)
+            love.graphics.rectangle("line", 433, 856, 1040.38, 179.64);
         elseif (mainMenuHelp) then
-            love.graphics.circle("line", 70, 1089+35, 50)
+            love.graphics.circle("line", 70, 1089+35, 50);
         elseif (mainMenuBack) then
-            love.graphics.rectangle("line", 1760, 1025, 160, 172)
+            love.graphics.rectangle("line", 1760, 1025, 160, 172);
         end
-    --Single Player Mode
+    elseif (helpMenu) then
+        love.graphics.setColor(1,1,1);
+        love.graphics.draw(helpMenuPNG, 0, 0);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172);
     elseif (singlePlayer) then
         love.graphics.setColor(1,1,1);
         love.graphics.draw(gameMenu1PNG,0,0)
@@ -533,8 +621,8 @@ function love.draw()
     elseif (gameOver1) then
         love.graphics.setColor(1, 1, 1);
         love.graphics.draw(gameOver1PNG, 0, 0);
-        love.graphics.print(score, 975, 110, 0, .7, .7)
-        love.graphics.rectangle("line", 1760, 1025, 160, 172)
+        love.graphics.print(score, 975, 110, 0, .7, .7);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172);
         gameOverMenu();
     elseif (gameOver2 == 1) then
         love.graphics.setColor(1, 1, 1);
@@ -542,7 +630,7 @@ function love.draw()
         love.graphics.print("TWO", 910, 73);
         love.graphics.print(score1, 760, 995, 0, .5, .5);
         love.graphics.print(score2, 1500, 990, 0, .5, .5);
-        love.graphics.rectangle("line", 1760, 1025, 160, 172)
+        love.graphics.rectangle("line", 1760, 1025, 160, 172);
         gameOverMenu();
     elseif (gameOver2 == 2) then
         love.graphics.setColor(1, 1, 1);
@@ -550,7 +638,7 @@ function love.draw()
         love.graphics.print("ONE", 910, 73);
         love.graphics.print(score1, 760, 995, 0, .5, .5);
         love.graphics.print(score2, 1500, 990, 0, .5, .5);
-        love.graphics.rectangle("line", 1760, 1025, 160, 172)
+        love.graphics.rectangle("line", 1760, 1025, 160, 172);
         gameOverMenu();
     end
 end
