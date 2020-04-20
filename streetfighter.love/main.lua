@@ -13,6 +13,13 @@ player1Stance1left = love.graphics.newImage("ryanstance1left.png")
 player1Stance2left = love.graphics.newImage("ryanstance2left.png")
 player1Punchleft = love.graphics.newImage("ryan1punchleft.png")
 
+player2Stance1right = love.graphics.newImage("alexstance1right.png")
+player2Stance2right = love.graphics.newImage("alexstance2right.png")
+player2Punchright = love.graphics.newImage("alexpunchright.png")
+player2Stance1left = love.graphics.newImage("alexstance1left.png")
+player2Stance2left = love.graphics.newImage("alexstance2left.png")
+player2Punchleft = love.graphics.newImage("alexpunchleft.png")
+
 player1Anims = {
     stance1right = player1Stance1right,
     stance2right = player1Stance2right,
@@ -22,8 +29,17 @@ player1Anims = {
     punchleft = player1Punchleft
 }
 
-fighter1 = Fighter.new("jon xu", 200, 400, keymap1, "right", screenDimX, 400, player1Anims)
-fighter2 = Fighter.new("alan gill", 1000, 400, keymap2, "left", screenDimX, 400, player1Anims)
+player2Anims = {
+    stance1right = player2Stance1right,
+    stance2right = player2Stance2right,
+    punchright = player2Punchright,
+    stance1left = player2Stance1left,
+    stance2left = player2Stance2left,
+    punchleft = player2Punchleft
+}
+
+fighter1 = Fighter.new("jon xu", 200, 400, keymap1, "right", screenDimX, 400, player1Anims,1)
+fighter2 = Fighter.new("alan gill", 1000, 400, keymap2, "left", screenDimX, 400, player2Anims,2)
 
 
 game = Fight.new(fighter1, fighter2)

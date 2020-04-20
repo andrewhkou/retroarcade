@@ -1,6 +1,6 @@
 Fighter = {}
 
-function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations)
+function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player)
     local f = {}
     f.name = name
     f.health = 100
@@ -9,7 +9,7 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.velY = 0
     f.x = x
     f.y = y
-    f.width = 200
+    f.width = 170
     f.height = 200
     f.hitboxX = f.width/2
     f.hitboxY = f.height/2
@@ -25,6 +25,7 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.animations = animations
     f.punchCounter = 0;
     f.animationCounter = 0;
+    f.player = player
     setmetatable(f, {__index = Fighter})
     return f
 end
@@ -163,30 +164,61 @@ function Fighter:keypressed(key, unicode)
 end
 
 function Fighter:animate(dt)
-    if self.punch then
-        if self.direction == "right" then
-            love.graphics.draw(self.animations.punchright, self.x-100, self.y, 0, 0.1, 0.1)
+    if self.player == 1 then 
+        scale = 0.1
+        moveLeft = 75
+        if self.punch then
+            if self.direction == "right" then
+                love.graphics.draw(self.animations.punchright, self.x-moveLeft, self.y, 0, scale, scale)
+            else
+                love.graphics.draw(self.animations.punchleft, self.x-moveLeft, self.y, 0, scale, scale)
+            end
+        elseif self.walkRight then
+            if self.animationCounter < 10 then
+                love.graphics.draw(self.animations.stance1right, self.x-moveLeft, self.y, 0, scale, scale)
+            else
+                love.graphics.draw(self.animations.stance2right, self.x-moveLeft, self.y, 0, scale, scale)
+            end
+        elseif self.walkLeft then
+            if self.animationCounter < 10 then
+                love.graphics.draw(self.animations.stance2left, self.x-moveLeft, self.y, 0, scale, scale)
+            else
+                love.graphics.draw(self.animations.stance1left, self.x-moveLeft, self.y, 0, scale, scale)
+            end
         else
-            love.graphics.draw(self.animations.punchleft, self.x-100, self.y, 0, 0.1, 0.1)
+            if self.direction == "right" then
+                love.graphics.draw(self.animations.stance1right, self.x-moveLeft, self.y, 0, scale, scale)
+            else 
+                love.graphics.draw(self.animations.stance2left, self.x-moveLeft, self.y, 0, scale, scale)
+            end
         end
-    elseif self.walkRight then
-        if self.animationCounter < 10 then
-            love.graphics.draw(self.animations.stance1right, self.x-100, self.y, 0, 0.1, 0.1)
+    else 
+        moveUp = 30
+        if self.punch then
+            if self.direction == "right" then
+                love.graphics.draw(self.animations.punchright, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            else
+                love.graphics.draw(self.animations.punchleft, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            end
+        elseif self.walkRight then
+            if self.animationCounter < 10 then
+                love.graphics.draw(self.animations.stance1right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            else
+                love.graphics.draw(self.animations.stance2right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            end
+        elseif self.walkLeft then
+            if self.animationCounter < 10 then
+                love.graphics.draw(self.animations.stance2left, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            else
+                love.graphics.draw(self.animations.stance1left, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            end
         else
-            love.graphics.draw(self.animations.stance2right, self.x-100, self.y, 0, 0.1, 0.1)
-        end
-    elseif self.walkLeft then
-        if self.animationCounter < 10 then
-            love.graphics.draw(self.animations.stance2left, self.x-100, self.y, 0, 0.1, 0.1)
-        else
-            love.graphics.draw(self.animations.stance1left, self.x-100, self.y, 0, 0.1, 0.1)
-        end
-    else
-        if self.direction == "right" then
-            love.graphics.draw(self.animations.stance1right, self.x-100, self.y, 0, 0.1, 0.1)
-        else 
-            love.graphics.draw(self.animations.stance2left, self.x-100, self.y, 0, 0.1, 0.1)
+            if self.direction == "right" then
+                love.graphics.draw(self.animations.stance1right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            else 
+                love.graphics.draw(self.animations.stance1left, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
+            end
         end
     end
-    -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
