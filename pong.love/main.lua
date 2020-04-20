@@ -1,5 +1,6 @@
-screenDimX = 1220;
-screenDimY = 800;
+onComputer = false;
+screenDimX = 1920;
+screenDimY = 1200;
 totalTimeElapsed = 0;
 highScore = 0;
 score = 0;
@@ -8,6 +9,9 @@ score2 = 0;
 timeElapsed = 0;
 paddleSpeed = 5;
 timeLimit = .1;
+selectWAV = love.audio.newSource("Select.wav", "static");
+optionWAV = love.audio.newSource("Option.wav", "static");
+helpMenuPNG = love.graphics.newImage("Help_Menu.png")
 
 player1 = {
     points = 0;
@@ -39,6 +43,8 @@ ball = {
     velY = -1,
     radius = 8
 }
+
+require("joystick")
 
 function getPaddle1LowerY()
     return paddle1.y + paddleHeight
@@ -131,7 +137,16 @@ function handlePaddle2Collision(ball)
 end
 
 function love.load()
-    mainMenu = true;
+    mainMenuHelp = false;
+    mainMenuPlay = true; 
+
+    function helpMenuOptions()
+        if (enterPressed()) then
+            helpMenu = false;
+            mainMenu = true;
+        end
+    end
+
     mainMenuBack = false;
     mainMenuPNG = love.graphics.newImage("PongMenu.png")
     love.window.setTitle("Pong");
@@ -162,23 +177,45 @@ function love.load()
     end 
 
     function mainMenuOptions()
-        if (player2right() or player1right()) then
-            mainMenu = false;
-            mainMenuBack = true;
-        end
-        if (player2left() or player1left()) then
-            mainMenu = true;
-            mainMenuBack = false;
+        if (mainMenuPlay) then
+           if (player1left()) then
+                love.audio.play(optionWAV);
+                mainMenuHelp = true;
+                mainMenuPlay = false;
+            elseif (player1right()) then
+                love.audio.play(optionWAV);
+                mainMenuPlay = false;
+                mainMenuBack = true;
+            end
+        elseif (mainMenuHelp) then
+            if (player1right()) then
+                love.audio.play(optionWAV);
+                mainMenuHelp = false;
+                mainMenuPlay = true;
+            end
+        elseif (mainMenuBack) then
+            if (player1left()) then
+                love.audio.play(optionWAV);
+                mainMenuBack = false;
+                mainMenuPlay = true;
+            end
         end
         if (enterPressed()) then
-            if (mainMenu and not mainMenuBack) then
-                mainMenu = false;
-                newGame();
-            end
-            if (mainMenuBack) then 
+            love.audio.play(selectWAV);
+            if (mainMenuPlay) then
+                ball.velX = 7;
+                ball.velY = -1;
+            elseif (mainMenuBack) then
                 love.event.push("quit");
+            elseif (mainMenuHelp) then
+                helpMenu = true;
             end
+            mainMenu = false;
         end
+    end
+
+    function helpMenuOptions()
+        
     end
 
     function newGame() 
@@ -189,7 +226,7 @@ function love.load()
         timeElapsed = 0;
         paddleSpeed = 5;
         gameOver2 = 0;
-
+        mainMenu = true;
         player1 = {
             points = 0;
         }
@@ -226,35 +263,47 @@ function love.load()
             newGame();
         end
     end
-
+    newGame();
 end
 
 function love.update(dt) 
     timeElapsed = timeElapsed + dt;
     totalTimeElapsed = totalTimeElapsed + 1;
-
+ -- handles main menu
+    if (mainMenu) then
+        ball.velX = 0;
+        ball.velY = 0;
+        if (timeElapsed > 2 * timeLimit) then
+            mainMenuOptions();
+            timeElapsed = 0;
+        end
+    end
+   
+    if (helpMenu) then
+        helpMenuOptions();
+    end
     -- handles keyboard inputs
-    if not love.keyboard.isDown('w') or not love.keyboard.isDown('s') then
+    if (not player1down() or not player1up()) then
         paddle1.vel = 0;
     end
 
-    if not love.keyboard.isDown('up') or not love.keyboard.isDown('down') then
+    if not player2down() or not player2up() then
         paddle2.vel = 0;
     end
 
-    if love.keyboard.isDown('w') and paddle1.y > 0 then
+    if player1up() and paddle1.y > 0 then
         paddle1.y = paddle1.y - paddleSpeed
         paddle1.vel = 5
     end
-    if love.keyboard.isDown('s') and (paddle1.y + paddleHeight) < screenDimY then
+    if player1down() and (paddle1.y + paddleHeight) < screenDimY then
         paddle1.y = paddle1.y + paddleSpeed 
         paddle1.vel = -5
     end
-    if love.keyboard.isDown('up') and paddle2.y > 0 then
+    if player2up() and paddle2.y > 0 then
         paddle2.y = paddle2.y - paddleSpeed
         paddle2.vel = 5
     end
-    if love.keyboard.isDown('down') and (paddle2.y + paddleHeight) < screenDimY then
+    if player2down() and (paddle2.y + paddleHeight) < screenDimY then
         paddle2.y = paddle2.y + paddleSpeed
         paddle2.vel = -5
     end
@@ -298,49 +347,57 @@ function love.update(dt)
     ball.x = ball.x + ball.velX
     ball.y = ball.y + ball.velY
 
-    -- handles main menu
-    if (mainMenu) then
-        ball.velX = 0;
-        ball.velY = 0;
-        if (timeElapsed > 2 * timeLimit) then
-            mainMenuOptions();
-            timeElapsed = 0;
-        end
-    end
+   
 
 end
 
 function love.draw() 
     if (mainMenu) then
         love.graphics.setColor(1,1,1);
+        love.graphics.setLineWidth(10);
         love.graphics.draw(mainMenuPNG,0,0,0,1920/7680, 1200/4800);
+        love.graphics.setColor(0,.5,0);
         if (mainMenuBack) then
             love.graphics.rectangle("line", 1760, 1025, 160, 172);
         end
+        if (mainMenuPlay) then
+            love.graphics.rectangle("line",631,750,658,186);
+        end
+        if (mainMenuHelp) then
+            love.graphics.circle("line", 85, 1074+35, 50);
+        end
     end
-    if (not mainMenu and not mainMenuBack) then
+    if (helpMenu) then
+        love.graphics.setColor(1,1,1);
+        love.graphics.draw(helpMenuPNG, 0, 0);
+        love.graphics.setColor(0,.5,0);
+        love.graphics.rectangle("line", 1760, 1025, 160, 172);
+    end
+    if (not mainMenu and not helpMenu) then
+        love.graphics.setColor(1,1,1);
         love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
         love.graphics.rectangle('fill', paddle1.x, paddle1.y, paddleWidth, paddleHeight)
         love.graphics.rectangle('fill', paddle2.x, paddle2.y, paddleWidth, paddleHeight)
         love.graphics.circle('fill', ball.x, ball.y, ball.radius)
-
+        score1 = player1.points;
+        score2 = player2.points;
         love.graphics.print(player1.points, screenDimX/2 - 100, 50)
         love.graphics.print(player2.points, screenDimX/2 + 75, 50)
     end
-    if (gameOver2 == 1) then
+    if (gameOver2 == 2) then
         love.graphics.setColor(1, 1, 1);
         love.graphics.draw(gameOver2PNG, 0, 0)
-        love.graphics.print("TWO", 910, 73);
-        love.graphics.print(score1, 760, 995, 0, .5, .5);
-        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.print("PLAYER TWO WINS!", 1050, 73);
+        love.graphics.print(score1, 700, 866, 0, .5, .5);
+        love.graphics.print(score2, 1000, 866, 0, .5, .5);
         love.graphics.rectangle("line", 1760, 1025, 160, 172)
         gameOverMenu();
-    elseif (gameOver2 == 2) then
+    elseif (gameOver2 == 1) then
         love.graphics.setColor(1, 1, 1);
         love.graphics.draw(gameOver2PNG, 0, 0)
-        love.graphics.print("ONE", 910, 73);
-        love.graphics.print(score1, 760, 995, 0, .5, .5);
-        love.graphics.print(score2, 1500, 990, 0, .5, .5);
+        love.graphics.print("PLAYER ONE WINS!", 50, 73);
+        love.graphics.print(score1, 700, 866, 0, .5, .5);
+        love.graphics.print(score2, 1600, 866, 0, .5, .5);
         love.graphics.rectangle("line", 1760, 1025, 160, 172)
         gameOverMenu();
 end
