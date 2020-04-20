@@ -35,7 +35,6 @@ function love.load()
     enterButton = 4;
     joysticks = love.joystick.getJoysticks();
     joystick1 = joysticks[1];
-    joystick2 = joysticks[2];
     mainMenuHelp = false;
     mainMenuSingle = true;
     mainMenuTwo = false;
@@ -70,28 +69,28 @@ function love.load()
     end
 
     function joystick2Up()
-        if ((not onComputer) and joystick2.getAxis(joystick2, 2) < - 0.5) then
+        if ((not onComputer) and joystick1.getAxis(joystick1, 4) < - 0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Down()
-        if ((not onComputer) and joystick1.getAxis(joystick2, 2) > 0.5) then
+        if ((not onComputer) and joystick1.getAxis(joystick1, 4) > 0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Left()
-        if ((not onComputer) and joystick2.getAxis(joystick2, 1) < -0.5) then
+        if ((not onComputer) and joystick1.getAxis(joystick1, 3) < -0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Right()
-        if ((not onComputer) and joystick2.getAxis(joystick2, 1) > 0.5) then
+        if ((not onComputer) and joystick1.getAxis(joystick1, 3) > 0.5) then
             return true;
         end
         return false;
