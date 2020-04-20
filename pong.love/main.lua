@@ -1,5 +1,5 @@
-screenDimX = 1920;
-screenDimY = 1200;
+screenDimX = 1220;
+screenDimY = 800;
 totalTimeElapsed = 0;
 highScore = 0;
 score = 0;
@@ -132,6 +132,7 @@ end
 
 function love.load()
     mainMenu = true;
+    mainMenuBack = false;
     mainMenuPNG = love.graphics.newImage("PongMenu.png")
     love.window.setTitle("Pong");
     love.window.setMode(screenDimX, screenDimY)
@@ -144,10 +145,39 @@ function love.load()
         return love.keyboard.isDown("return")
     end
 
+    function player1right()
+        return love.keyboard.isDown("d")
+    end
+
+    function player2right()
+        return love.keyboard.isDown("right")
+    end 
+
+    function player1left()
+        return love.keyboard.isDown("a")
+    end
+
+    function player2left()
+        return love.keyboard.isDown("left")
+    end 
+
     function mainMenuOptions()
-        if (enterPressed()) then
+        if (player2right() or player1right()) then
             mainMenu = false;
-            newGame();
+            mainMenuBack = true;
+        end
+        if (player2left() or player1left()) then
+            mainMenu = true;
+            mainMenuBack = false;
+        end
+        if (enterPressed()) then
+            if (mainMenu and not mainMenuBack) then
+                mainMenu = false;
+                newGame();
+            end
+            if (mainMenuBack) then 
+                love.event.push("quit");
+            end
         end
     end
 
@@ -284,8 +314,11 @@ function love.draw()
     if (mainMenu) then
         love.graphics.setColor(1,1,1);
         love.graphics.draw(mainMenuPNG,0,0,0,1920/7680, 1200/4800);
+        if (mainMenuBack) then
+            love.graphics.rectangle("line", 1760, 1025, 160, 172);
+        end
     end
-    if (not mainMenu) then
+    if (not mainMenu and not mainMenuBack) then
         love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
         love.graphics.rectangle('fill', paddle1.x, paddle1.y, paddleWidth, paddleHeight)
         love.graphics.rectangle('fill', paddle2.x, paddle2.y, paddleWidth, paddleHeight)
