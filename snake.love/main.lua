@@ -33,12 +33,18 @@ function love.load()
     left2 = "left";
     enter = "return"
     enterButton = 4;
+    startButton = 1;
     joysticks = love.joystick.getJoysticks();
     joystick1 = joysticks[1];
+    joystick2 = joysticks[2];
     mainMenuHelp = false;
     mainMenuSingle = true;
     mainMenuTwo = false;
     mainMenuBack = false;
+
+    function backtoGameMenu() 
+        return joystick1.isDown(joystick1, startButton);
+    end
 
     function joystick1Up()
         if ((not onComputer) and joystick1.getAxis(joystick1, 2) < - 0.5) then
@@ -69,28 +75,28 @@ function love.load()
     end
 
     function joystick2Up()
-        if ((not onComputer) and joystick1.getAxis(joystick1, 4) < - 0.5) then
+        if ((not onComputer) and joystick2.getAxis(joystick2, 2) < - 0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Down()
-        if ((not onComputer) and joystick1.getAxis(joystick1, 4) > 0.5) then
+        if ((not onComputer) and joystick2.getAxis(joystick2, 2) > 0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Left()
-        if ((not onComputer) and joystick1.getAxis(joystick1, 3) < -0.5) then
+        if ((not onComputer) and joystick2.getAxis(joystick2, 1) < -0.5) then
             return true;
         end
         return false;
     end
 
     function joystick2Right()
-        if ((not onComputer) and joystick1.getAxis(joystick1, 3) > 0.5) then
+        if ((not onComputer) and joystick2.getAxis(joystick2, 1) > 0.5) then
             return true;
         end
         return false;
@@ -315,6 +321,10 @@ function love.load()
         currY = snake1[1].y;
         -- should prolly change this but ill do it later
         if (singlePlayer) then
+            if (backtoGameMenu()) then
+                singlePlayer = false;
+                mainMenu = true;
+            end
             if (direction1 == 1) then
                 newY = currY + speed;
                 if (newY > screenDimY - blockSize) then
@@ -345,6 +355,10 @@ function love.load()
                 table.insert(snake1, 1, {x = newX, y = currY});
             end
         elseif (twoPlayer) then
+            if (backtoGameMenu()) then
+                twoPlayer = false;
+                mainMenu = true;
+            end
             if (direction1 == 1) then
                 newY = currY + speed;
                 if (newY > screenDimY - blockSize) then
