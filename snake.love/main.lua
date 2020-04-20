@@ -291,19 +291,19 @@ function love.load()
     end
 
     function keyboardPlayer2()
-        if (love.keyboard.isDown(up2)) then
+        if (love.keyboard.isDown(up2) or joystick2Up()) then
             if (direction2 ~= 1) then
                 direction2 = 3;
             end
-        elseif (love.keyboard.isDown(right2)) then
+        elseif (love.keyboard.isDown(right2) or joystick2Right()) then
             if (direction2 ~= 4) then
                 direction2 = 2;
             end
-        elseif (love.keyboard.isDown(down2)) then
+        elseif (love.keyboard.isDown(down2) or joystick2Down()) then
             if (direction2 ~= 3) then
                 direction2 = 1;
             end
-        elseif (love.keyboard.isDown(left2)) then
+        elseif (love.keyboard.isDown(left2) or joystick2Left()) then
             if (direction2 ~= 2) then
                 direction2 = 4;
             end
