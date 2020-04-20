@@ -27,6 +27,8 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.animationCounter = 0;
     f.player = player
     f.screenDimX = screenDimX
+    f.displayHealthLoss = 0
+    f.healthLost = 0
     setmetatable(f, {__index = Fighter})
     return f
 end
@@ -68,6 +70,8 @@ end
 function Fighter:loseHealth(player2)
     if player2.punchCounter == 0 then
         loss = math.random(1, 8)
+        self.displayHealthLoss = 25
+        self.healthLost = loss
         if self.health - loss < 0 then
             self.health = 0
         else
@@ -108,6 +112,9 @@ function Fighter:update(dt)
     -- if self.onCooldown > 0 then
     --     self.onCooldown = self.onCooldown - 1;
     -- end
+    if self.displayHealthLoss > 0 then
+        self.displayHealthLoss = self.displayHealthLoss - 1
+    end
     if self.animationCounter > 20 then
         self.animationCounter = 0
     end
@@ -165,6 +172,9 @@ function Fighter:keypressed(key, unicode)
 end
 
 function Fighter:animate(dt)
+    if self.displayHealthLoss > 0 then
+        love.graphics.print("-" .. self.healthLost, self.x + self.width/2 - 5, self.y - 50)
+    end
     if self.player == 1 then 
         scale = 0.1
         moveLeft = 75
