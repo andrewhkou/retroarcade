@@ -1,7 +1,13 @@
+onComputer = true
 screenDimX = 725
-screenDimY = 625
+screenDimY = 1200
 block = 25
 vel = block/10
+startX = screenDimX / 2 - block / 2
+startY = block * 16 + 250
+gameEnd = false
+highScoreAllTime = 0
+
 timeElapsed = 0
 lives = 3
 score = 0
@@ -14,11 +20,12 @@ gameStart = nil
 iteration = 0
 dead = false
 deathTime = 0
-startX = screenDimX / 2 - block / 2
-startY = block * 16
+allDots = {}
+gameStart = os.time()
 
 require("walls") -- import walls
 require("dots") -- import dots
+require("joystick") -- sense joystick input
 
 dir = {
 	up = "w",
@@ -57,8 +64,8 @@ redGhost = {
 	y = bgate.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/redGhost.png")
@@ -70,8 +77,8 @@ greenGhost = {
 	y = redGhost.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/greenGhost.png")
@@ -83,8 +90,8 @@ yellowGhost = {
 	y = redGhost.y,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/yellowGhost.png")
@@ -96,15 +103,13 @@ pinkGhost = {
 	y = redGhost.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/pinkGhost.png")
 }
 ghosts = {redGhost, greenGhost, yellowGhost, pinkGhost}
-
-allDots = {}
 
 function intToIndex(x, y)
 	return tostring(x) .. "," .. tostring(y)
@@ -122,19 +127,19 @@ function drawGhosts()
 	if scared and time - scaredStart <= 10 then 
 		if time  - scaredStart > 5 then -- ghosts flash blue/white when power up timer is ending
 			if time % 2 == 0 then
-				drawScared(scaredPic, 25/320)
+				drawScared(scaredPic, block/320)
 			else
-				drawScared(scaredPicWhite, 25/600)
+				drawScared(scaredPicWhite, block/600)
 			end
 		else
-			drawScared(scaredPic, 25/320)
+			drawScared(scaredPic, block/320)
 		end
 	else
 		scared = false
-		love.graphics.draw(redGhost.sprite, redGhost.x, redGhost.y, 0, 25/360, 25/360)
-		love.graphics.draw(greenGhost.sprite, greenGhost.x, greenGhost.y, 25/360, 25/360)
-		love.graphics.draw(yellowGhost.sprite, yellowGhost.x, yellowGhost.y, 0, 25/360, 25/360)
-		love.graphics.draw(pinkGhost.sprite, pinkGhost.x, pinkGhost.y, 0, 25/360, 25/360)
+		love.graphics.draw(redGhost.sprite, redGhost.x, redGhost.y, 0, block/360, block/360)
+		love.graphics.draw(greenGhost.sprite, greenGhost.x, greenGhost.y, block/360, block/360)
+		love.graphics.draw(yellowGhost.sprite, yellowGhost.x, yellowGhost.y, 0, block/360, block/360)
+		love.graphics.draw(pinkGhost.sprite, pinkGhost.x, pinkGhost.y, 0, block/360, block/360)
 	end
 end
 
@@ -152,7 +157,7 @@ function addDot(r, c, super) -- adds normal dot or super dot
 end
 
 function initialDotAdd() -- add all dots into allDots array
-	for row = 1, 22, 1 do
+	for row = 1, 32, 1 do
 		for col = 1, screenDimX / block, 1 do
 			if dots[row][col] ~= 0 then addDot(row, col, dots[row][col] == 2) end
 		end
@@ -231,12 +236,12 @@ function noCollision(nextx, nexty) -- checks collision with walls
 	return true
 end
 
-function sideScreenTeleport() -- teleports pacman from opposite horizontal sides
-	if pacman.x == -block and pacman.y == block * 10 then
-		pacman.x = screenDimX - block
+function sideScreenTeleport(sprite) -- teleports pacman from opposite horizontal sides
+	if sprite.x == -block and sprite.y == hl.y + block then
+		sprite.x = screenDimX - block
 	end
-	if pacman.x == screenDimX and pacman.y == block * 10 then
-		pacman.x = -block/2
+	if sprite.x == screenDimX and sprite.y == hl.y + block then
+		sprite.x = -block/2
 	end
 end
 
@@ -269,7 +274,7 @@ function updatePacman()
 			end
 			pacman.x = pacman.x + pacman.xvel;
 			pacman.y = pacman.y + pacman.yvel;
-			sideScreenTeleport()
+			sideScreenTeleport(pacman)
 	end
 	eatDot()
 end
@@ -291,37 +296,74 @@ function randomMovement(ghost, time)
 		ghost.prevDir = openDirections[index]
 	end
 	if ghost.prevDir == "top" and noCollision(ghost.x, ghost.y - vel) then
-		ghost.y = ghost.y - vel
+		if scared then 
+			ghost.y = ghost.y - vel / 2
+		else
+			ghost.y = ghost.y - vel
+		end
 	elseif ghost.prevDir == "down" and noCollision(ghost.x, ghost.y + vel) then
-		ghost.y = ghost.y + vel
+		if scared then 
+			ghost.y = ghost.y + vel / 2
+		else
+			ghost.y = ghost.y + vel
+		end
 	elseif ghost.prevDir == "left" and noCollision(ghost.x - vel, ghost.y) then
-		ghost.x = ghost.x - vel
+		if scared then
+			ghost.x = ghost.x - vel / 2
+		else
+			ghost.x = ghost.x - vel
+		end
 	elseif ghost.prevDir == "right" and noCollision(ghost.x + vel, ghost.y) then
-		ghost.x = ghost.x + vel
+		if scared then
+			ghost.x = ghost.x + vel / 2
+		else
+			ghost.x = ghost.x + vel
+		end
 	end
+	for i = 1, 4, 1 do sideScreenTeleport(ghosts[i]) end
 	ghost.moveIteration = ghost.moveIteration + 1
 end
 
-function distanceToPacman(ghost)
+function distanceToPacman(ghost) -- finds distance to pacman given a ghost
 	return math.sqrt((pacman.x - ghost.x)^2 + (pacman.y - ghost.y)^2)
 end
 
-function nearGhost(ghost)
+function nearGhost(ghost) -- determines if ghost is close enough and in same hallway as pacman
 	return (ghost.x == pacman.x or ghost.y == pacman.y) and distanceToPacman(ghost) <= 10 * block
 end
 
 function ghostChase(ghost) -- if pacman is near ghost and in same hallway then ghost will chase pacman
 	if ghost.x == pacman.x then
 		if ghost.y > pacman.y and noCollision(ghost.x, ghost.y - vel) then
-			ghost.y = ghost.y - vel
+			if scared then
+				if noCollision(ghost.x, ghost.y + vel / 2) then ghost.y = ghost.y + vel / 2 
+				else randomMovement(ghost, os.time()) end
+			else
+				ghost.y = ghost.y - vel
+			end
 		elseif noCollision(ghost.x, ghost.y + vel) then
+			if scared then
+				if noCollision(ghost.x, ghost.y - vel / 2) then ghost.y = ghost.y - vel / 2
+				else randomMovement(ghost, os.time()) end
+			else
 			ghost.y = ghost.y + vel
+			end
 		end
 	elseif ghost.y == pacman.y then
 		if ghost.x > pacman.x and noCollision(ghost.x - vel, ghost.y) then
-			ghost.x = ghost.x - vel
+			if scared then
+				if noCollision(ghost.x + vel / 2, ghost.y) then ghost.x = ghost.x + vel / 2
+				else randomMovement(ghost, os.time()) end
+			else
+				ghost.x = ghost.x - vel
+			end
 		elseif noCollision(ghost.x + vel, ghost.y) then
-			ghost.x = ghost.x + vel
+			if scared then
+				if noCollision(ghost.x - vel / 2, ghost.y) then ghost.x = ghost.x - vel / 2 
+				else randomMovement(ghost, os.time()) end
+			else
+				ghost.x = ghost.x + vel
+			end
 		end
 	end
 end
@@ -359,7 +401,7 @@ function updateGhosts() -- initial ghost movement outside of the box and then ra
 	end
 end
 
-function deathChecker()
+function deathChecker() -- checks if pacman and ghosts collide
 	center = {pacman.x + block/2, pacman.y + block/2}
 	for i = 1, 4, 1 do
 		ghost = ghosts[i]
@@ -373,27 +415,55 @@ function deathChecker()
 				dead = true 
 				lives = lives - 1
 				deathTime = os.time()
+				if lives == 0 and highScore > highScoreAllTime then highScoreAllTime = highScore end
 			end
 		end
 	end
 end
 
-function drawDead()
+function gameEndRestart()
+	timeElapsed = 0
+	lives = 3
+	score = 0
+	highScore = highScoreAllTime
+	totalDots = 0
+	dotsEaten = 0
+	scared = false
+	scaredStart = 0
+	gameStart = nil
+	iteration = 0
+	dead = false
+	deathTime = 0
+	allDots = {}
+	gameStart = os.time()
+	gameEnd = false
+	initialDotAdd()
+	restart()
+end
+
+function drawDead() -- restarts game after death
 	timeSinceDead = os.time() - deathTime
 	if dead and timeSinceDead <= 2 then
 		text = "You Died!"
 		if lives == 0 then text = "You Lose!" end
 		love.graphics.setNewFont("coolfont.ttf", 50)
-		love.graphics.print(text, screenDimX / 2 - 5 * block, screenDimY / 2 - 2 * block)
+		love.graphics.print(text, screenDimX / 2 - 6 * block, screenDimY / 2 - 5 * block)
 		love.graphics.setNewFont("coolfont.ttf", 22)
 	elseif dead then
-		gameStart = os.time()
-		dead = false
-		pacman.x = startX
-		pacman.y = startY
-		iteration = 0
-		deathTime = 0
-		restart()
+		if lives == 0 then
+			gameEnd = true
+			if timeSinceDead % 2 == 0 then
+				love.graphics.setNewFont("coolfont.ttf", 50)
+				love.graphics.print("Move to Restart", screenDimX / 2 - 11 * block, screenDimY / 2 - 5 * block)
+				love.graphics.setNewFont("coolfont.ttf", 22)
+			end
+		else
+			gameStart = os.time()
+			dead = false
+			iteration = 0
+			deathTime = 0
+			restart()
+		end
 	end
 end
 
@@ -402,32 +472,44 @@ function love.load()
     love.window.setMode(screenDimX, screenDimY)
     love.graphics.setNewFont("coolfont.ttf", 22)
     initialDotAdd()
-    gameStart = os.time()
 end
 
 function love.update(dt)
 	timeElapsed = timeElapsed + dt
+	if gameEnd then
+		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.left)
+			or love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.up2) or love.keyboard.isDown(dir.down2) 
+			or love.keyboard.isDown(dir.left2) or love.keyboard.isDown(dir.right2) then
+				gameEndRestart()
+			end
+		for i = 1, #joysticks, 1 do
+			if joysticks[i]() then 
+				gameEndRestart()
+			end
+		end
+		timeElapsed = 0
+	end
 	if timeElapsed > 0.01 then
 		timeElapsed = 0
-		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.up2) then
+		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.up2) or joystick1Up() or joystick2Up() then
 			pacman.xvel = 0
 			pacman.yvel = -vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, u)
 		end
-		if love.keyboard.isDown(dir.left) or love.keyboard.isDown(dir.left2) then
+		if love.keyboard.isDown(dir.left) or love.keyboard.isDown(dir.left2) or joystick1Left() or joystick2Left() then
 			pacman.yvel = 0
 			pacman.xvel = -vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, l)
 		end
-		if love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.right2) then
+		if love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.right2) or joystick1Right() or joystick2Right() then
 			pacman.yvel = 0
 			pacman.xvel = vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
 			wallCollisionUpdate(noCollide, r)
 		end
-		if love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.down2) then
+		if love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.down2) or joystick1Down() or joystick2Down() then
 			pacman.xvel = 0
 			pacman.yvel = vel
 			noCollide = noCollision(pacman.x + pacman.xvel, pacman.y + pacman.yvel)
@@ -441,10 +523,10 @@ end
 
 function love.draw()
 	love.graphics.setColor(247, 255, 0) -- draw pacman
-	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
+	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, block/360, block/360)
 
 	for i = 1, lives, 1 do -- draw lives on the bottom left
-		love.graphics.draw(r, 65 * (i - 1) + 25, screenDimY - block * 2.5, 0, 50/360, 50/360)
+		love.graphics.draw(r, 65 * (i - 1) + 25, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
 	end
 
 	for item, v in pairs(rectangles) do -- draw walls
@@ -463,10 +545,10 @@ function love.draw()
 
 	-- draw score
 	love.graphics.setColor(255, 0, 0) 
-	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, screenDimY - block * 2.75)
-	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, screenDimY - block * 1.5)
-	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, screenDimY - block * 2.75)
-	love.graphics.print(tostring(highScore), screenDimX - 6 * block, screenDimY - block * 1.5)
+	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, bottomBar.y + 3 * block)
+	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(highScore), screenDimX - 6 * block, bottomBar.y + 3 * block)
 
 	winChecker()
 	drawDead()
