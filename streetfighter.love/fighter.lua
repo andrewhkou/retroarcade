@@ -18,7 +18,7 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.walkRight = false;
     f.walkLeft = false;
     f.jumpUp = false;
-    f.jumpFall = false; 
+    f.jumpFall = false;
     f.punch = false;
     f.punchCooldown = false
     f.onCooldown = 0;
@@ -29,17 +29,21 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.screenDimX = screenDimX
     f.displayHealthLoss = 0
     f.healthLost = 0
+    f.collisionRight = false;
+    f.collisionLeft = false;
     setmetatable(f, {__index = Fighter})
     return f
 end
 
-function Fighter:getState() 
+
+
+function Fighter:getState()
     return self.state
 end
 
 function Fighter:getCoord()
     return {x = self.x, y = self.y}
-end 
+end
 
 function Fighter:getHeight()
     return self.height
@@ -49,27 +53,55 @@ function Fighter:getWidth()
     return self.width
 end
 
+function Fighter:checkCollisionLeft(player2)
+  if self.direction == 'right' then
+      self.collisionLeft = false
+  elseif player2.y - self.height/2 - self.y > 0 then
+      self.collisionLeft = false
+  elseif self.x - player2.x <= 25 and player2.x <= self.x then
+      self.collisionLeft =  true
+  else
+      self.collisionleft = false
+  end
+end
+
+function Fighter:checkCollisionRight(player2)
+    if self.direction =='left' then
+        self.collisionRight = false
+    elseif player2.y - self.height/2 - self.y > 0 then
+          self.collisionRight = false
+    elseif player2.x - self.x <= 25 and player2.x >= self.x then
+        self.collisionRight = true
+    else
+        self.collisionRight = false
+    end
+end
+
 function Fighter:walkRightAction()
-    if self.x >= (self.screenDimX - self.width) then
-        self.x = self.screenDimX - self.width
-    elseif self.x < (self.screenDimX - self.width) then
-        self.x = self.x + 10
+    if not self.collisionRight then
+        if self.x >= (self.screenDimX - self.width) then
+            self.x = self.screenDimX - self.width
+        elseif self.x < (self.screenDimX - self.width) then
+            self.x = self.x + 10
+        end
     end
     self.direction = 'right'
 end
 
 function Fighter:walkLeftAction()
-    if self.x <= 0 then
-        self.x = 0
-    elseif self.x > 0 then
-        self.x = self.x - 10
+    if not self.collisionLeft then
+        if self.x <= 0 then
+            self.x = 0
+        elseif self.x > 0 then
+            self.x = self.x - 10
+        end
     end
     self.direction = 'left'
 end
 
 function Fighter:loseHealth(player2)
     if player2.punchCounter == 0 then
-        loss = math.random(1, 8)
+        loss = math.random(5, 10)
         self.displayHealthLoss = 25
         self.healthLost = loss
         if self.health - loss < 0 then
@@ -99,7 +131,7 @@ end
 
 function Fighter:jumpFallAction()
     if self.y >= self.regHeight then
-        self.y = self.regHeight 
+        self.y = self.regHeight
         self.jumpFall = false
     else
         self.y = self.y - self.velY
@@ -118,8 +150,8 @@ function Fighter:update(dt)
     if self.animationCounter > 20 then
         self.animationCounter = 0
     end
-    if self.punchCounter == 0 then 
-        self.punchCounter = 10
+    if self.punchCounter == 0 then
+    --     self.punchCounter = 10
         self.punch = false
     end
     if self.punchCounter > 0 then
@@ -127,7 +159,7 @@ function Fighter:update(dt)
     end
     if not love.keyboard.isDown(self.keyMap['right']) then
         self.walkRight = false
-        
+
     end
     if not love.keyboard.isDown(self.keyMap['left']) then
         self.walkLeft = false
@@ -157,7 +189,7 @@ function Fighter:update(dt)
     if self.jumpUp then
         self:jumpUpAction()
     end
-    if self.jumpFall then 
+    if self.jumpFall then
         self:jumpFallAction()
     end
 
@@ -165,7 +197,7 @@ function Fighter:update(dt)
 end
 
 function Fighter:keypressed(key, unicode)
-    if key == self.keyMap['punch'] then
+    if key == self.keyMap['punch'] and self.punchCounter == 0 and not self.punch then
         self.punch = true
         self.punchCounter = 10;
     end
@@ -175,7 +207,7 @@ function Fighter:animate(dt)
     if self.displayHealthLoss > 0 then
         love.graphics.print("-" .. self.healthLost, self.x + self.width/2 - 5, self.y - 50)
     end
-    if self.player == 1 then 
+    if self.player == 1 then
         scale = 0.1
         moveLeft = 75
         if self.punch then
@@ -184,13 +216,13 @@ function Fighter:animate(dt)
             else
                 love.graphics.draw(self.animations.punchleft, self.x-moveLeft, self.y, 0, scale, scale)
             end
-        elseif self.walkRight then
+        elseif self.walkRight and not self.jumpUp and not self.jumpFall then
             if self.animationCounter < 10 then
                 love.graphics.draw(self.animations.stance1right, self.x-moveLeft, self.y, 0, scale, scale)
             else
                 love.graphics.draw(self.animations.stance2right, self.x-moveLeft, self.y, 0, scale, scale)
             end
-        elseif self.walkLeft then
+        elseif self.walkLeft and not self.jumpUp and not self.jumpFall then
             if self.animationCounter < 10 then
                 love.graphics.draw(self.animations.stance2left, self.x-moveLeft, self.y, 0, scale, scale)
             else
@@ -199,11 +231,11 @@ function Fighter:animate(dt)
         else
             if self.direction == "right" then
                 love.graphics.draw(self.animations.stance1right, self.x-moveLeft, self.y, 0, scale, scale)
-            else 
+            else
                 love.graphics.draw(self.animations.stance2left, self.x-moveLeft, self.y, 0, scale, scale)
             end
         end
-    else 
+    else
         moveUp = 30
         if self.punch then
             if self.direction == "right" then
@@ -211,13 +243,13 @@ function Fighter:animate(dt)
             else
                 love.graphics.draw(self.animations.punchleft, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
             end
-        elseif self.walkRight then
+        elseif self.walkRight and not self.jumpUp and not self.jumpFall  then
             if self.animationCounter < 10 then
                 love.graphics.draw(self.animations.stance1right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
             else
                 love.graphics.draw(self.animations.stance2right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
             end
-        elseif self.walkLeft then
+        elseif self.walkLeft and not self.jumpUp and not self.jumpFall then
             if self.animationCounter < 10 then
                 love.graphics.draw(self.animations.stance2left, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
             else
@@ -226,7 +258,7 @@ function Fighter:animate(dt)
         else
             if self.direction == "right" then
                 love.graphics.draw(self.animations.stance1right, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
-            else 
+            else
                 love.graphics.draw(self.animations.stance1left, self.x-100, self.y-moveUp, 0, 0.1, 0.1)
             end
         end
