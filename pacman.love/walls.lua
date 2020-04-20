@@ -1,25 +1,24 @@
 topBar = {
 	x = 0,
-	y = 0,
+	y = 250,
 	width = screenDimX,
 	height = block
 }
-
 va = {
 	x = 0,
-	y = 0,
+	y = topBar.y,
 	width = block,
 	height = 175
 }
 vb = {
 	x = screenDimX/2 - block/2,
-	y = 0,
+	y = va.y,
 	width = block,
 	height = (3 * block)
 }
 ha = {
 	x = va.x + 2 * block,
-	y = 2 * block,
+	y = va.y + 2 * block,
 	width = (vb.x - va.x - block - (3 * block)) / 2,
 	height = block
 }
@@ -63,7 +62,7 @@ hg = {
 }
 hh = {
 	x = 0,
-	y = va.height - block,
+	y = va.y + va.height - block,
 	width = ha.width + 2 * block,
 	height = block
 }
@@ -75,7 +74,7 @@ hk = {
 }
 hl = {
 	x = 0,
-	y = va.height + 2 * block,
+	y = va.y + va.height + 2 * block,
 	width = hh.width,
 	height = block
 }
@@ -189,7 +188,7 @@ bottomBar = {
 }
 vc = {
 	x = screenDimX - block,
-	y = 0,
+	y = va.y,
 	width = block,
 	height = va.height
 }

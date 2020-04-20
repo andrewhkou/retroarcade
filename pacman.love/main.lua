@@ -1,10 +1,10 @@
-onComputer = false;
+onComputer = true
 screenDimX = 725
-screenDimY = 625
+screenDimY = 1200
 block = 25
 vel = block/10
 startX = screenDimX / 2 - block / 2
-startY = block * 16
+startY = block * 16 + 250
 gameEnd = false
 highScoreAllTime = 0
 
@@ -64,8 +64,8 @@ redGhost = {
 	y = bgate.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/redGhost.png")
@@ -77,8 +77,8 @@ greenGhost = {
 	y = redGhost.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/greenGhost.png")
@@ -90,8 +90,8 @@ yellowGhost = {
 	y = redGhost.y,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/yellowGhost.png")
@@ -103,8 +103,8 @@ pinkGhost = {
 	y = redGhost.y + block,
 	xvel = 0,
 	yvel = 0,
-	width = 25,
-	height = 25,
+	width = block,
+	height = block,
 	prevDir = nil,
 	moveIteration = 0,
 	startPic = love.graphics.newImage("images/pinkGhost.png")
@@ -127,19 +127,19 @@ function drawGhosts()
 	if scared and time - scaredStart <= 10 then 
 		if time  - scaredStart > 5 then -- ghosts flash blue/white when power up timer is ending
 			if time % 2 == 0 then
-				drawScared(scaredPic, 25/320)
+				drawScared(scaredPic, block/320)
 			else
-				drawScared(scaredPicWhite, 25/600)
+				drawScared(scaredPicWhite, block/600)
 			end
 		else
-			drawScared(scaredPic, 25/320)
+			drawScared(scaredPic, block/320)
 		end
 	else
 		scared = false
-		love.graphics.draw(redGhost.sprite, redGhost.x, redGhost.y, 0, 25/360, 25/360)
-		love.graphics.draw(greenGhost.sprite, greenGhost.x, greenGhost.y, 25/360, 25/360)
-		love.graphics.draw(yellowGhost.sprite, yellowGhost.x, yellowGhost.y, 0, 25/360, 25/360)
-		love.graphics.draw(pinkGhost.sprite, pinkGhost.x, pinkGhost.y, 0, 25/360, 25/360)
+		love.graphics.draw(redGhost.sprite, redGhost.x, redGhost.y, 0, block/360, block/360)
+		love.graphics.draw(greenGhost.sprite, greenGhost.x, greenGhost.y, block/360, block/360)
+		love.graphics.draw(yellowGhost.sprite, yellowGhost.x, yellowGhost.y, 0, block/360, block/360)
+		love.graphics.draw(pinkGhost.sprite, pinkGhost.x, pinkGhost.y, 0, block/360, block/360)
 	end
 end
 
@@ -157,7 +157,7 @@ function addDot(r, c, super) -- adds normal dot or super dot
 end
 
 function initialDotAdd() -- add all dots into allDots array
-	for row = 1, 22, 1 do
+	for row = 1, 32, 1 do
 		for col = 1, screenDimX / block, 1 do
 			if dots[row][col] ~= 0 then addDot(row, col, dots[row][col] == 2) end
 		end
@@ -237,10 +237,10 @@ function noCollision(nextx, nexty) -- checks collision with walls
 end
 
 function sideScreenTeleport(sprite) -- teleports pacman from opposite horizontal sides
-	if sprite.x == -block and sprite.y == block * 10 then
+	if sprite.x == -block and sprite.y == hl.y + block then
 		sprite.x = screenDimX - block
 	end
-	if sprite.x == screenDimX and sprite.y == block * 10 then
+	if sprite.x == screenDimX and sprite.y == hl.y + block then
 		sprite.x = -block/2
 	end
 end
@@ -447,14 +447,14 @@ function drawDead() -- restarts game after death
 		text = "You Died!"
 		if lives == 0 then text = "You Lose!" end
 		love.graphics.setNewFont("coolfont.ttf", 50)
-		love.graphics.print(text, screenDimX / 2 - 6 * block, screenDimY / 2 - 2 * block)
+		love.graphics.print(text, screenDimX / 2 - 6 * block, screenDimY / 2 - 5 * block)
 		love.graphics.setNewFont("coolfont.ttf", 22)
 	elseif dead then
 		if lives == 0 then
 			gameEnd = true
 			if timeSinceDead % 2 == 0 then
 				love.graphics.setNewFont("coolfont.ttf", 50)
-				love.graphics.print("Move to Restart", screenDimX / 2 - 11 * block, screenDimY / 2 - 4 * block)
+				love.graphics.print("Move to Restart", screenDimX / 2 - 11 * block, screenDimY / 2 - 5 * block)
 				love.graphics.setNewFont("coolfont.ttf", 22)
 			end
 		else
@@ -523,10 +523,10 @@ end
 
 function love.draw()
 	love.graphics.setColor(247, 255, 0) -- draw pacman
-	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, 25/360, 25/360)
+	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, block/360, block/360)
 
 	for i = 1, lives, 1 do -- draw lives on the bottom left
-		love.graphics.draw(r, 65 * (i - 1) + 25, screenDimY - block * 2.5, 0, 50/360, 50/360)
+		love.graphics.draw(r, 65 * (i - 1) + 25, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
 	end
 
 	for item, v in pairs(rectangles) do -- draw walls
@@ -545,10 +545,10 @@ function love.draw()
 
 	-- draw score
 	love.graphics.setColor(255, 0, 0) 
-	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, screenDimY - block * 2.75)
-	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, screenDimY - block * 1.5)
-	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, screenDimY - block * 2.75)
-	love.graphics.print(tostring(highScore), screenDimX - 6 * block, screenDimY - block * 1.5)
+	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, bottomBar.y + 3 * block)
+	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(highScore), screenDimX - 6 * block, bottomBar.y + 3 * block)
 
 	winChecker()
 	drawDead()
