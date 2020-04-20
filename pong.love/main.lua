@@ -1,5 +1,5 @@
-screenDimX = 1280;
-screenDimY = 720;
+screenDimX = 1220;
+screenDimY = 800;
 totalTimeElapsed = 0;
 highScore = 0;
 score = 0;
@@ -7,6 +7,7 @@ score1 = 0;
 score2 = 0;
 timeElapsed = 0;
 paddleSpeed = 5;
+timeLimit = .1;
 
 player1 = {
     points = 0;
@@ -130,12 +131,55 @@ function handlePaddle2Collision(ball)
 end
 
 function love.load()
+    mainMenu = true;
+    mainMenuBack = false;
+    mainMenuPNG = love.graphics.newImage("PongMenu.png")
     love.window.setTitle("Pong");
     love.window.setMode(screenDimX, screenDimY)
     love.graphics.setNewFont(40)
     font = love.graphics.newFont("VT323-Regular.ttf", 130);
     love.graphics.setFont(font);
     gameOver2PNG = love.graphics.newImage("GameOver2.png")
+
+    function enterPressed()
+        return love.keyboard.isDown("return")
+    end
+
+    function player1right()
+        return love.keyboard.isDown("d")
+    end
+
+    function player2right()
+        return love.keyboard.isDown("right")
+    end 
+
+    function player1left()
+        return love.keyboard.isDown("a")
+    end
+
+    function player2left()
+        return love.keyboard.isDown("left")
+    end 
+
+    function mainMenuOptions()
+        if (player2right() or player1right()) then
+            mainMenu = false;
+            mainMenuBack = true;
+        end
+        if (player2left() or player1left()) then
+            mainMenu = true;
+            mainMenuBack = false;
+        end
+        if (enterPressed()) then
+            if (mainMenu and not mainMenuBack) then
+                mainMenu = false;
+                newGame();
+            end
+            if (mainMenuBack) then 
+                love.event.push("quit");
+            end
+        end
+    end
 
     function newGame() 
         totalTimeElapsed = 0;
@@ -166,12 +210,13 @@ function love.load()
         }
         
         ball = {
-            x = 100,
-            y = 100,
+            x = 0,
+            y = 0,
             velX = 7,
             velY = -1,
             radius = 8
         }
+
         resetBall1();
     end
 
@@ -253,17 +298,35 @@ function love.update(dt)
     ball.x = ball.x + ball.velX
     ball.y = ball.y + ball.velY
 
+    -- handles main menu
+    if (mainMenu) then
+        ball.velX = 0;
+        ball.velY = 0;
+        if (timeElapsed > 2 * timeLimit) then
+            mainMenuOptions();
+            timeElapsed = 0;
+        end
+    end
 
 end
 
 function love.draw() 
-    love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
-    love.graphics.rectangle('fill', paddle1.x, paddle1.y, paddleWidth, paddleHeight)
-    love.graphics.rectangle('fill', paddle2.x, paddle2.y, paddleWidth, paddleHeight)
-    love.graphics.circle('fill', ball.x, ball.y, ball.radius)
+    if (mainMenu) then
+        love.graphics.setColor(1,1,1);
+        love.graphics.draw(mainMenuPNG,0,0,0,1920/7680, 1200/4800);
+        if (mainMenuBack) then
+            love.graphics.rectangle("line", 1760, 1025, 160, 172);
+        end
+    end
+    if (not mainMenu and not mainMenuBack) then
+        love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
+        love.graphics.rectangle('fill', paddle1.x, paddle1.y, paddleWidth, paddleHeight)
+        love.graphics.rectangle('fill', paddle2.x, paddle2.y, paddleWidth, paddleHeight)
+        love.graphics.circle('fill', ball.x, ball.y, ball.radius)
 
-    love.graphics.print(player1.points, screenDimX/2 - 100, 50)
-    love.graphics.print(player2.points, screenDimX/2 + 75, 50)
+        love.graphics.print(player1.points, screenDimX/2 - 100, 50)
+        love.graphics.print(player2.points, screenDimX/2 + 75, 50)
+    end
     if (gameOver2 == 1) then
         love.graphics.setColor(1, 1, 1);
         love.graphics.draw(gameOver2PNG, 0, 0)
