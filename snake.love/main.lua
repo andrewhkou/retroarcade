@@ -32,7 +32,7 @@ function love.load()
     down2 = "down";
     left2 = "left";
     enter = "return"
-    enterButton = 14;
+    enterButton = 4;
     joysticks = love.joystick.getJoysticks();
     joystick1 = joysticks[1];
     joystick2 = joysticks[2];
