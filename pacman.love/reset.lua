@@ -20,8 +20,6 @@ function restart()
 		height = 25,
 		prevDir = nil,
 		moveIteration = 0,
-		startx = bgate.x,
-		starty = bgate.y + block,
 		startPic = love.graphics.newImage("images/redGhost.png")
 	}
 
@@ -35,8 +33,6 @@ function restart()
 		height = 25,
 		prevDir = nil,
 		moveIteration = 0,
-		startx = redGhost.x,
-		starty = redGhost.y + 2 * block,
 		startPic = love.graphics.newImage("images/greenGhost.png")
 	}
 
@@ -50,8 +46,6 @@ function restart()
 		height = 25,
 		prevDir = nil,
 		moveIteration = 0,
-		startx = bgate.x + block,
-		starty = bgate.y + block,
 		startPic = love.graphics.newImage("images/yellowGhost.png")
 	}
 
@@ -65,8 +59,6 @@ function restart()
 		height = 25,
 		prevDir = nil,
 		moveIteration = 0,
-		startx = bgate.x + block,
-		starty = bgate.y + 2 * block,
 		startPic = love.graphics.newImage("images/pinkGhost.png")
 	}
 	ghosts = {redGhost, greenGhost, yellowGhost, pinkGhost}

@@ -61,8 +61,6 @@ redGhost = {
 	height = 25,
 	prevDir = nil,
 	moveIteration = 0,
-	startx = bgate.x,
-	starty = bgate.y + block,
 	startPic = love.graphics.newImage("images/redGhost.png")
 }
 
@@ -76,8 +74,6 @@ greenGhost = {
 	height = 25,
 	prevDir = nil,
 	moveIteration = 0,
-	startx = redGhost.x,
-	starty = redGhost.y + 2 * block,
 	startPic = love.graphics.newImage("images/greenGhost.png")
 }
 
@@ -91,8 +87,6 @@ yellowGhost = {
 	height = 25,
 	prevDir = nil,
 	moveIteration = 0,
-	startx = bgate.x + block,
-	starty = bgate.y + block,
 	startPic = love.graphics.newImage("images/yellowGhost.png")
 }
 
@@ -106,8 +100,6 @@ pinkGhost = {
 	height = 25,
 	prevDir = nil,
 	moveIteration = 0,
-	startx = bgate.x + block,
-	starty = bgate.y + 2 * block,
 	startPic = love.graphics.newImage("images/pinkGhost.png")
 }
 ghosts = {redGhost, greenGhost, yellowGhost, pinkGhost}
@@ -310,6 +302,30 @@ function randomMovement(ghost, time)
 	ghost.moveIteration = ghost.moveIteration + 1
 end
 
+function distanceToPacman(ghost)
+	return math.sqrt((pacman.x - ghost.x)^2 + (pacman.y - ghost.y)^2)
+end
+
+function nearGhost(ghost)
+	return (ghost.x == pacman.x or ghost.y == pacman.y) and distanceToPacman(ghost) <= 10 * block
+end
+
+function ghostChase(ghost) -- if pacman is near ghost and in same hallway then ghost will chase pacman
+	if ghost.x == pacman.x then
+		if ghost.y > pacman.y and noCollision(ghost.x, ghost.y - vel) then
+			ghost.y = ghost.y - vel
+		elseif noCollision(ghost.x, ghost.y + vel) then
+			ghost.y = ghost.y + vel
+		end
+	elseif ghost.y == pacman.y then
+		if ghost.x > pacman.x and noCollision(ghost.x - vel, ghost.y) then
+			ghost.x = ghost.x - vel
+		elseif noCollision(ghost.x + vel, ghost.y) then
+			ghost.x = ghost.x + vel
+		end
+	end
+end
+
 function updateGhosts() -- initial ghost movement outside of the box and then random movement
 	if dead then return end
 	if os.time() - gameStart > 1 and iteration < 20 then
@@ -329,39 +345,34 @@ function updateGhosts() -- initial ghost movement outside of the box and then ra
 		pinkGhost.y = pinkGhost.y + pinkGhost.yvel
 		iteration = iteration + 1		
 	end
-	if iteration >= 20 then randomMovement(redGhost, os.clock() * 100000) end
-	if iteration >= 40 then randomMovement(yellowGhost, os.clock() * 100000) end
-	if iteration >= 70 then randomMovement(greenGhost,  os.clock() * 100000) end
-	if iteration >= 100 then randomMovement(pinkGhost, os.clock() * 100000) end
+	if iteration >= 20 then
+		if nearGhost(redGhost) then ghostChase(redGhost) else randomMovement(redGhost, os.clock() * 100000) end
+	end
+	if iteration >= 40 then 
+		if nearGhost(yellowGhost) then ghostChase(yellowGhost) else randomMovement(yellowGhost, os.clock() * 100000) end
+	end
+	if iteration >= 70 then 
+		if nearGhost(greenGhost) then ghostChase(greenGhost) else randomMovement(greenGhost, os.clock() * 100000) end
+	end
+	if iteration >= 100 then 
+		if nearGhost(pinkGhost) then ghostChase(pinkGhost) else randomMovement(pinkGhost, os.clock() * 100000) end
+	end
 end
 
 function deathChecker()
-	nextx = pacman.x
-	nexty = pacman.y
-	corners = {
-		topL = {nextx, nexty}, 
-		topR = {nextx + block, nexty}, 
-		botL = {nextx, nexty + block}, 
-		botR = {nextx + block, nexty + block},
-		topmid = {nextx + block/2, nexty},
-		botmid = {nextx + block/2, nexty + block},
-		leftmid = {nextx, nexty + block/2},
-		rightmid = {nextx + block, nexty + block/2}
-	}
+	center = {pacman.x + block/2, pacman.y + block/2}
 	for i = 1, 4, 1 do
 		ghost = ghosts[i]
-		for _, edge in pairs(corners) do
-			if wallOverlap(edge, ghost) and not dead then
-				if scared then
-					score = score + 100
-					ghost.x = ghost.startx
-					ghost.y = ghost.starty
-					ghost.sprite = ghost.startPic
-				else
-					dead = true 
-					lives = lives - 1
-					deathTime = os.time()
-				end
+		if wallOverlap(center, ghost) and not dead then
+			if scared then
+				score = score + 200
+				ghost.x = bgate.x
+				ghost.y = bgate.y - block
+				ghost.sprite = ghost.startPic
+			else
+				dead = true 
+				lives = lives - 1
+				deathTime = os.time()
 			end
 		end
 	end
