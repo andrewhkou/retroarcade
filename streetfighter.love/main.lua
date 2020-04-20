@@ -38,8 +38,8 @@ player2Anims = {
     punchleft = player2Punchleft
 }
 
-fighter1 = Fighter.new("jon xu", 200, 400, keymap1, "right", screenDimX, 400, player1Anims,1)
-fighter2 = Fighter.new("alan gill", 1000, 400, keymap2, "left", screenDimX, 400, player2Anims,2)
+fighter1 = Fighter.new("jon xu", 200, 450, keymap1, "right", screenDimX, 450, player1Anims,1, screenDimX)
+fighter2 = Fighter.new("alan gill", 1000, 450, keymap2, "left", screenDimX, 450, player2Anims,2, screenDimX)
 
 
 game = Fight.new(fighter1, fighter2)
@@ -121,8 +121,15 @@ function love.draw()
     elseif isGoing then
         love.graphics.reset()
         love.graphics.line(0, 600, screenDimX, 600)
-        love.graphics.print(fighter1.health, screenDimX/2 - 100, 50)
-        love.graphics.print(fighter2.health, screenDimX/2 + 75, 50)
+        -- health bars
+        love.graphics.print("PLAYER 1", 50, 22)
+        love.graphics.rectangle('fill', 50, 50, (screenDimX / 2 - 100) * (fighter1.health/100), 30)
+        love.graphics.print("HP: " .. fighter1.health, 50, 90)
+
+        love.graphics.print("PLAYER 2", screenDimX - 110, 22)
+        love.graphics.rectangle('fill', screenDimX / 2 + 50 + (screenDimX / 2 - 100) * (1 - (fighter2.health/100)), 50, (screenDimX / 2 - 100) - (screenDimX / 2 - 100) * (1 - (fighter2.health/100)), 30)
+        love.graphics.print("HP: " .. fighter2.health, screenDimX - 100, 90)
+
         updateFighters() 
     else 
         love.graphics.setColor(0,0,0);

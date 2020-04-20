@@ -1,6 +1,6 @@
 Fighter = {}
 
-function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player)
+function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player, screenDimX)
     local f = {}
     f.name = name
     f.health = 100
@@ -9,8 +9,8 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.velY = 0
     f.x = x
     f.y = y
-    f.width = 170
-    f.height = 200
+    f.width = 125
+    f.height = 150
     f.hitboxX = f.width/2
     f.hitboxY = f.height/2
     f.screenDimX = screenDimX
@@ -26,6 +26,7 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.punchCounter = 0;
     f.animationCounter = 0;
     f.player = player
+    f.screenDimX = screenDimX
     setmetatable(f, {__index = Fighter})
     return f
 end
@@ -70,7 +71,7 @@ function Fighter:loseHealth(player2)
         if self.health - loss < 0 then
             self.health = 0
         else
-            self.health = self.health - math.random(1, 8)
+            self.health = self.health - loss
         end
     end
 end
@@ -136,7 +137,7 @@ function Fighter:update(dt)
         self.animationCounter = self.animationCounter + 1
     end
     if not self.jumpUp and not self.jumpFall and love.keyboard.isDown(self.keyMap['up']) then
-        self.velY = 25
+        self.velY = 22
         self.y = self.y - 20
         self.jumpUp = true
     end
@@ -220,5 +221,5 @@ function Fighter:animate(dt)
             end
         end
     end
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
