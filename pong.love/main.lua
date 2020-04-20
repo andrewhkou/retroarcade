@@ -1,5 +1,5 @@
-screenDimX = 1220;
-screenDimY = 800;
+screenDimX = 1920;
+screenDimY = 1200;
 totalTimeElapsed = 0;
 highScore = 0;
 score = 0;
@@ -283,7 +283,7 @@ end
 function love.draw() 
     if (mainMenu) then
         love.graphics.setColor(1,1,1);
-        love.graphics.draw(mainMenuPNG,0,0);
+        love.graphics.draw(mainMenuPNG,0,0,0,1920/7680, 1200/4800);
     end
     if (not mainMenu) then
         love.graphics.line(screenDimX/2, screenDimY, screenDimX/2, 0)
