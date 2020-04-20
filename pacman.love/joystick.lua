@@ -1,3 +1,7 @@
+joysticks = love.joystick.getJoysticks();
+joystick1 = joysticks[1];
+joystick2 = joysticks[2];
+
 function joystick1Up()
     if ((not onComputer) and joystick1.getAxis(joystick1, 2) < - 0.5) then
         return true;

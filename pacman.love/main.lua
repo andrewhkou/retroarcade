@@ -1,4 +1,4 @@
-onComputer = true
+onComputer = false;
 screenDimX = 725
 screenDimY = 625
 block = 25
