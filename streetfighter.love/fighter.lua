@@ -222,7 +222,7 @@ function Fighter:animate(dt)
         moveUp = 70
         if self.punch then
             if self.direction == "right" then
-                graphics.draw(self.animations.punchright, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
+                love.graphics.draw(self.animations.punchright, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
             else
                 love.graphics.draw(self.animations.punchleft, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
             end
