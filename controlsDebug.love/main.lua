@@ -20,7 +20,7 @@ function love.joystickpressed(joystick, button)
 end
 
 function love.update(dt)
-    if (love.keyboard.isDown("escape")) then
+    if (love.joystick.gamepadpressed(love.joystick.getJoysticks()[1], 14)) then
         love.event.push("quit");
     end
 end
