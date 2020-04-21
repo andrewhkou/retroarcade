@@ -1,4 +1,4 @@
-onComputer = false;
+onComputer = true;
 screenDimX = 1920;
 screenDimY = 1200;
 totalTimeElapsed = 0;
@@ -355,7 +355,7 @@ function love.draw()
     if (mainMenu) then
         love.graphics.setColor(1,1,1);
         love.graphics.setLineWidth(10);
-        love.graphics.draw(mainMenuPNG,0,0,0,1920/7680, 1200/4800);
+        love.graphics.draw(mainMenuPNG,0,0);
         love.graphics.setColor(0,.5,0);
         if (mainMenuBack) then
             love.graphics.rectangle("line", 1760, 1025, 160, 172);
