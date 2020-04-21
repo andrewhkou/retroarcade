@@ -2,7 +2,7 @@ local fighter = require "fighter"
 local fight = require "fight"
 require "joystick"
 
-onComputer = false
+onComputer = false;
 totalTimeElapsed = 0;
 screenDimX = 1920;
 screenDimY = 1200;
@@ -54,6 +54,7 @@ game = Fight.new(fighter1, fighter2)
 isGoing = true
 
 function love.load()
+    timeLimit = .1;
     love.window.setTitle("Street Fighter");
     love.window.setMode(screenDimX, screenDimY)
     love.graphics.setNewFont(40)
@@ -83,8 +84,8 @@ end
 
 function love.update(dt)
     totalTimeElapsed = totalTimeElapsed + dt;
-    if (timeElapsed > 2 * timeLimit) then
-        timeElapsed = 0;
+    if (totalTimeElapsed > 2 * timeLimit) then
+        totalTimeElapsed = 0;
         if displayHelp then
             if selectPressed1() then
                 displayHelp = false
