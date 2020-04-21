@@ -3,7 +3,7 @@ local fight = require "fight"
 require "joystick"
 
 onComputer = false
-
+totalTimeElapsed = 0;
 screenDimX = 1920;
 screenDimY = 1200;
 local keymap1 = {up="w",down="s",left="a",right="d",punch="g"}
@@ -82,41 +82,45 @@ function newGame()
 end
 
 function love.update(dt)
-    if displayHelp then
-        if selectPressed1() then
-            displayHelp = false
+    totalTimeElapsed = totalTimeElapsed + dt;
+    if (timeElapsed > 2 * timeLimit) then
+        timeElapsed = 0;
+        if displayHelp then
+            if selectPressed1() then
+                displayHelp = false
+            end
+        elseif mainMenu then 
+            if mainMenuPlay then
+                if selectPressed1() then
+                    mainMenu = false
+                    isGoing = true
+                end
+            elseif mainMenuHelp then
+                if selectPressed1() then
+                    displayHelp = true
+                end
+            elseif not isGoing then
+                if selectPressed1() then
+                    newGame()
+                end
+            end
+        elseif mainMenu and notDisplayHelp and joystick1Right() then
+            mainMenuHelp = true
+            mainMenuPlay = false
+        elseif mainMenu and notDisplayHelp and joystick1Left() then
+            mainMenuHelp = false
+            mainMenuPlay = true
         end
-    elseif mainMenu then 
-        if mainMenuPlay then
-            if selectPressed1() then
-                mainMenu = false
-                isGoing = true
-            end
-        elseif mainMenuHelp then
-            if selectPressed1() then
-                displayHelp = true
-            end
-        elseif not isGoing then
-            if selectPressed1() then
-                newGame()
-            end
-        end
-    elseif mainMenu and notDisplayHelp and joystick1Right() then
-        mainMenuHelp = true
-        mainMenuPlay = false
-    elseif mainMenu and notDisplayHelp and joystick1Left() then
-        mainMenuHelp = false
-        mainMenuPlay = true
-    end
-    if not mainMenu then
-        if isGoing then
-            fighter1:checkCollisionRight(fighter2)
-            fighter1:checkCollisionLeft(fighter2)
-            fighter2:checkCollisionRight(fighter1)
-            fighter2:checkCollisionLeft(fighter1)
-            game:applyDamage()
-            if game.winner ~= 0 then
-                isGoing = false
+        if not mainMenu then
+            if isGoing then
+                fighter1:checkCollisionRight(fighter2)
+                fighter1:checkCollisionLeft(fighter2)
+                fighter2:checkCollisionRight(fighter1)
+                fighter2:checkCollisionLeft(fighter1)
+                game:applyDamage()
+                if game.winner ~= 0 then
+                    isGoing = false
+                end
             end
         end
     end
