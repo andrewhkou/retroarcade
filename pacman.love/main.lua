@@ -1,5 +1,5 @@
 onComputer = false
-screenDimX = 725
+screenDimX = 1920
 screenDimY = 1200
 block = 25
 vel = block/10
@@ -8,6 +8,7 @@ startY = block * 16 + 250
 gameEnd = false
 highScoreAllTime = 0
 startScreen = true
+xDisparity = (screenDimX - 725) / 2
 
 firstGameOverScreen = true
 timeElapsed = 0
@@ -48,6 +49,7 @@ scaredPic = love.graphics.newImage("images/scaredGhost.jpg")
 scaredPicWhite = love.graphics.newImage("images/whiteGhost.jpg") -- flashing ghost when timer is about to end
 mainMenu = love.graphics.newImage("images/pacmanHome.png")
 gameOver = love.graphics.newImage("images/gameOver.png")
+black = love.graphics.newImage("images/black.png")
 
 require("reset")
 
@@ -152,17 +154,17 @@ function addDot(r, c, super) -- adds normal dot or super dot
 	x = block * (c - 1)
 	y = block * (r - 1)
 	circle = {
-			x = x + block / 2,
+			x = x + block / 2 + xDisparity,
 			y = y + block / 2,
 			radius = 2.5
 		}
 	if super then circle["radius"] = 6 end
-	allDots[intToIndex(x + block/2, y + block/2)] = circle
+	allDots[intToIndex(x + block/2 + xDisparity, y + block/2)] = circle
 end
 
 function initialDotAdd() -- add all dots into allDots array
 	for row = 1, 32, 1 do
-		for col = 1, screenDimX / block, 1 do
+		for col = 1, 725 / block, 1 do
 			if dots[row][col] ~= 0 then addDot(row, col, dots[row][col] == 2) end
 		end
 	end
@@ -241,11 +243,11 @@ function noCollision(nextx, nexty) -- checks collision with walls
 end
 
 function sideScreenTeleport(sprite) -- teleports pacman from opposite horizontal sides
-	if sprite.x == -block and sprite.y == hl.y + block then
-		sprite.x = screenDimX - block
+	if sprite.x == -block + xDisparity and sprite.y == hl.y + block then
+		sprite.x = screenDimX - block - xDisparity
 	end
-	if sprite.x == screenDimX and sprite.y == hl.y + block then
-		sprite.x = -block/2
+	if sprite.x == screenDimX - xDisparity and sprite.y == hl.y + block then
+		sprite.x = -block/2 + xDisparity
 	end
 end
 
@@ -426,7 +428,6 @@ function deathChecker() -- checks if pacman and ghosts collide
 end
 
 function gameEndRestart()
-	love.window.setMode(screenDimX, screenDimY)
 	firstGameOverScreen = true
 	timeElapsed = 0
 	lives = 3
@@ -459,7 +460,6 @@ function drawDead() -- restarts game after death
 		if lives == 0 then
 			gameEnd = true
 			if firstGameOverScreen then
-				love.window.setMode(1920, 1200)
 				firstGameOverScreen = false
 			end
 			love.graphics.draw(gameOver, 0, 0)
@@ -486,7 +486,7 @@ function drawUpdate()
 	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, block/360, block/360)
 
 	for i = 1, lives, 1 do -- draw lives on the bottom left
-		love.graphics.draw(r, 65 * (i - 1) + 25, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
+		love.graphics.draw(r, 65 * (i - 1) + 25 + xDisparity, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
 	end
 
 	for item, v in pairs(rectangles) do -- draw walls
@@ -507,9 +507,11 @@ function drawUpdate()
 	love.graphics.setColor(255, 0, 0) 
 	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, bottomBar.y + 2 * block)
 	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, bottomBar.y + 3 * block)
-	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, bottomBar.y + 2 * block)
-	love.graphics.print(tostring(highScore), screenDimX - 6 * block, bottomBar.y + 3 * block)
+	love.graphics.print("HIGH SCORE", screenDimX - 9 * block - xDisparity, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(highScore), screenDimX - 6 * block - xDisparity, bottomBar.y + 3 * block)
 
+	love.graphics.draw(black, hl.x - block, hl.y + block, 0, block/768, block/768)
+	love.graphics.draw(black, hm.x + hm.width, hm.y + block, 0, block/768, block/768)
 	winChecker()
 	drawDead()
 end
@@ -530,12 +532,15 @@ end
 
 function love.load()
     love.window.setTitle("Pacman")
-    love.window.setMode(1920, 1200)
+    love.window.setMode(screenDimX, screenDimY)
     love.graphics.setNewFont("coolfont.ttf", 22)
     initialDotAdd()
 end
 
 function love.update(dt)
+	if (love.keyboard.isDown('escape') or startPressed1() or startPressed1()) then
+        love.event.push("quit");
+    end
 	timeElapsed = timeElapsed + dt
 	if gameEnd then
 		if anyMovement() then gameEndRestart() end	
@@ -578,7 +583,7 @@ function love.draw()
 		love.graphics.draw(mainMenu, 0, 0)
 		if anyMovement() then 
 			startScreen = false
-			love.window.setMode(screenDimX, screenDimY)
+
 		end
 		gameStart = os.time()
 	else

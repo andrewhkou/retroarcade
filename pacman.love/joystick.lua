@@ -2,6 +2,17 @@ joysticks = love.joystick.getJoysticks();
 joystick1 = joysticks[1];
 joystick2 = joysticks[2];
 
+startButton = 7;
+
+
+function startPressed1()
+    return (not onComputer) and joystick1.isDown(joystick1, startButton);
+end
+
+function startPressed2()
+    return (not onComputer) and joystick2.isDown(joystick2, startButton);
+end
+
 function joystick1Up()
     if ((not onComputer) and joystick1.getAxis(joystick1, 2) < - 0.5) then
         return true;
