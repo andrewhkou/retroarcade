@@ -1,5 +1,8 @@
 local fighter = require "fighter"
 local fight = require "fight"
+require "joystick"
+
+onComputer = false
 
 screenDimX = 1920;
 screenDimY = 1200;
@@ -43,8 +46,8 @@ player2Anims = {
     punchleft = player2Punchleft
 }
 
-fighter1 = Fighter.new("jon xu", 320, 800, keymap1, "right", screenDimX, 800, player1Anims,1, screenDimX)
-fighter2 = Fighter.new("alan gill", 1620, 800, keymap2, "left", screenDimX, 800, player2Anims,2, screenDimX)
+fighter1 = Fighter.new("jon xu", 320, 800, keymap1, "right", screenDimX, 800, player1Anims,1, screenDimX, false, false, false, false)
+fighter2 = Fighter.new("alan gill", 1620, 800, keymap2, "left", screenDimX, 800, player2Anims,2, screenDimX, false, false, false, false)
 
 
 game = Fight.new(fighter1, fighter2)
@@ -165,4 +168,77 @@ end
 function updateFighters()
     fighter1:update()
     fighter2:update()
+    updateJoysticks()
+
+    if displayHelp then
+        if selectPressed1() then
+            displayHelp = false
+        end
+    elseif mainMenu then 
+        if mainMenuPlay then
+            if selectPressed1() then
+                mainMenu = false
+                isGoing = true
+            end
+        elseif mainMenuHelp then
+            if selectPressed1() then
+                displayHelp = true
+            end
+        elseif not isGoing then
+            if selectPressed1() then
+                newGame()
+            end
+        end
+    elseif mainMenu and notDisplayHelp and joystick1Right() then
+        mainMenuHelp = true
+        mainMenuPlay = false
+    elseif mainMenu and notDisplayHelp and joystick1Left() then
+        mainMenuHelp = false
+        mainMenuPlay = true
+    end
+end
+
+
+function updateJoysticks() 
+    if joystick1Left() then
+        fighter1.joystickLeft = true
+    else
+        fighter1.joystickLeft = false
+    end
+    if joystick1Right() then
+        fighter1.joystickRight = true
+    else
+        fighter1.joystickRight = false
+    end
+    if joystick1Up() then
+        fighter1.joystickUp = true
+    else
+        fighter1.joystickUp = false
+    end
+    if joystick1Down() then
+        fighter1.joystickDown = true
+    else
+        fighter1.joystickDown = false
+    end
+
+    if joystick2Left() then
+        fighter2.joystickLeft = true
+    else
+        fighter2.joystickLeft = false
+    end
+    if joystick2Right() then
+        fighter2.joystickRight = true
+    else
+        fighter2.joystickRight = false
+    end
+    if joystick2Up() then
+        fighter2.joystickUp = true
+    else
+        fighter2.joystickUp = false
+    end
+    if joystick2Down() then
+        fighter2.joystickDown = true
+    else
+        fighter2.joystickDown = false
+    end
 end

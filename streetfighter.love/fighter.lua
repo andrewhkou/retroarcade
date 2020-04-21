@@ -1,6 +1,6 @@
 Fighter = {}
 
-function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player, screenDimX)
+function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player, screenDimX, joystickLeft, joystickRight, joystickUp, joystickDown)
     local f = {}
     f.name = name
     f.health = 100
@@ -31,6 +31,10 @@ function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, anima
     f.healthLost = 0
     f.collisionRight = false;
     f.collisionLeft = false;
+    f.joystickLeft = joystickLeft
+    f.joystickRight = joystickRight
+    f.joystickUp = joystickUp
+    f.joystickDown = joystickDown
     setmetatable(f, {__index = Fighter})
     return f
 end
@@ -151,31 +155,29 @@ function Fighter:update(dt)
         self.animationCounter = 0
     end
     if self.punchCounter == 0 then
-    --     self.punchCounter = 10
         self.punch = false
     end
     if self.punchCounter > 0 then
         self.punchCounter = self.punchCounter - 1
     end
-    if not love.keyboard.isDown(self.keyMap['right']) then
+    if not love.keyboard.isDown(self.keyMap['right']) and not self.joystickRight then
         self.walkRight = false
-
     end
-    if not love.keyboard.isDown(self.keyMap['left']) then
+    if not love.keyboard.isDown(self.keyMap['left']) and not self.joystickLeft then
         self.walkLeft = false
     end
-    if not love.keyboard.isDown(self.keyMap['left']) and not love.keyboard.isDown(self.keyMap['right']) then
+    if not love.keyboard.isDown(self.keyMap['left']) and not love.keyboard.isDown(self.keyMap['right']) and not self.joystickLeft and not self.joystickRight then
         self.animationCounter = 0
     end
-    if love.keyboard.isDown(self.keyMap['right']) then
+    if love.keyboard.isDown(self.keyMap['right']) or self.joystickRight then
         self.walkRight = true;
         self.animationCounter = self.animationCounter + 1
     end
-    if love.keyboard.isDown(self.keyMap['left']) then
+    if love.keyboard.isDown(self.keyMap['left']) or self.joystickLeft then
         self.walkLeft = true
         self.animationCounter = self.animationCounter + 1
     end
-    if not self.jumpUp and not self.jumpFall and love.keyboard.isDown(self.keyMap['up']) then
+    if not self.jumpUp and not self.jumpFall and (love.keyboard.isDown(self.keyMap['up']) or self.joystickUp) then
         self.velY = 27
         self.y = self.y - 20
         self.jumpUp = true
