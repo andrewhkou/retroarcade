@@ -1,11 +1,11 @@
 topBar = {
-	x = 0,
+	x = (screenDimX - 725) / 2,
 	y = 250,
-	width = screenDimX,
+	width = 725,
 	height = block
 }
 va = {
-	x = 0,
+	x = topBar.x,
 	y = topBar.y,
 	width = block,
 	height = 175
@@ -61,7 +61,7 @@ hg = {
 	height = hd.height
 }
 hh = {
-	x = 0,
+	x = topBar.x,
 	y = va.y + va.height - block,
 	width = ha.width + 2 * block,
 	height = block
@@ -73,7 +73,7 @@ hk = {
 	height = block
 }
 hl = {
-	x = 0,
+	x = topBar.x,
 	y = va.y + va.height + 2 * block,
 	width = hh.width,
 	height = block
@@ -181,13 +181,13 @@ haa = {
 	height = block
 }
 bottomBar = {
-	x = 0,
+	x = topBar.x,
 	y = hz.y + 2 * block,
-	width = screenDimX,
+	width = 725,
 	height = block
 }
 vc = {
-	x = screenDimX - block,
+	x = screenDimX - block - xDisparity,
 	y = va.y,
 	width = block,
 	height = va.height
