@@ -1,4 +1,4 @@
-onComputer = true
+onComputer = false
 screenDimX = 725
 screenDimY = 1200
 block = 25
@@ -7,7 +7,9 @@ startX = screenDimX / 2 - block / 2
 startY = block * 16 + 250
 gameEnd = false
 highScoreAllTime = 0
+startScreen = true
 
+firstGameOverScreen = true
 timeElapsed = 0
 lives = 3
 score = 0
@@ -44,6 +46,8 @@ u = love.graphics.newImage("images/8bit_up.jpg")
 d = love.graphics.newImage("images/8bit_down.jpg")
 scaredPic = love.graphics.newImage("images/scaredGhost.jpg")
 scaredPicWhite = love.graphics.newImage("images/whiteGHost.jpg") -- flashing ghost when timer is about to end
+mainMenu = love.graphics.newImage("images/pacmanHome.png")
+gameOver = love.graphics.newImage("images/gameOver.png")
 
 require("reset")
 
@@ -422,6 +426,8 @@ function deathChecker() -- checks if pacman and ghosts collide
 end
 
 function gameEndRestart()
+	love.window.setMode(screenDimX, screenDimY)
+	firstGameOverScreen = true
 	timeElapsed = 0
 	lives = 3
 	score = 0
@@ -452,9 +458,17 @@ function drawDead() -- restarts game after death
 	elseif dead then
 		if lives == 0 then
 			gameEnd = true
+			if firstGameOverScreen then
+				love.window.setMode(1920, 1200)
+				firstGameOverScreen = false
+			end
+			love.graphics.draw(gameOver, 0, 0)
+			love.graphics.setNewFont("coolfont.ttf", 50)
+			love.graphics.print(tostring(score), 1920 / 2 + 2 * block, 5.5 * block)
+			love.graphics.setNewFont("coolfont.ttf", 22)
 			if timeSinceDead % 2 == 0 then
 				love.graphics.setNewFont("coolfont.ttf", 50)
-				love.graphics.print("Move to Restart", screenDimX / 2 - 11 * block, screenDimY / 2 - 5 * block)
+				love.graphics.print("Move to Restart", 1920 / 2 - 10 * block, screenDimY / 2 + 12 * block)
 				love.graphics.setNewFont("coolfont.ttf", 22)
 			end
 		else
@@ -467,9 +481,56 @@ function drawDead() -- restarts game after death
 	end
 end
 
+function drawUpdate()
+	love.graphics.setColor(247, 255, 0) -- draw pacman
+	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, block/360, block/360)
+
+	for i = 1, lives, 1 do -- draw lives on the bottom left
+		love.graphics.draw(r, 65 * (i - 1) + 25, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
+	end
+
+	for item, v in pairs(rectangles) do -- draw walls
+		love.graphics.setColor(0, 0, 255)
+		if item == "bgate" then love.graphics.setColor(169,169,169) end
+		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
+	end
+
+	love.graphics.setColor(255, 255, 255) 
+	for _, circle in pairs(allDots) do -- draw dots
+		love.graphics.circle('fill', circle.x, circle.y, circle.radius)
+	end
+
+	-- draw ghosts
+	drawGhosts()
+
+	-- draw score
+	love.graphics.setColor(255, 0, 0) 
+	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, bottomBar.y + 3 * block)
+	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, bottomBar.y + 2 * block)
+	love.graphics.print(tostring(highScore), screenDimX - 6 * block, bottomBar.y + 3 * block)
+
+	winChecker()
+	drawDead()
+end
+
+function anyMovement()
+	if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.left)
+		or love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.up2) or love.keyboard.isDown(dir.down2) 
+		or love.keyboard.isDown(dir.left2) or love.keyboard.isDown(dir.right2) then
+			return true
+		end
+	for i = 1, #joysticks, 1 do
+		if joysticks[i]() then 
+			return true
+		end
+	end
+	return false
+end
+
 function love.load()
     love.window.setTitle("Pacman")
-    love.window.setMode(screenDimX, screenDimY)
+    love.window.setMode(1920, 1200)
     love.graphics.setNewFont("coolfont.ttf", 22)
     initialDotAdd()
 end
@@ -477,16 +538,7 @@ end
 function love.update(dt)
 	timeElapsed = timeElapsed + dt
 	if gameEnd then
-		if love.keyboard.isDown(dir.up) or love.keyboard.isDown(dir.down) or love.keyboard.isDown(dir.left)
-			or love.keyboard.isDown(dir.right) or love.keyboard.isDown(dir.up2) or love.keyboard.isDown(dir.down2) 
-			or love.keyboard.isDown(dir.left2) or love.keyboard.isDown(dir.right2) then
-				gameEndRestart()
-			end
-		for i = 1, #joysticks, 1 do
-			if joysticks[i]() then 
-				gameEndRestart()
-			end
-		end
+		if anyMovement() then gameEndRestart() end	
 		timeElapsed = 0
 	end
 	if timeElapsed > 0.01 then
@@ -522,34 +574,14 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.setColor(247, 255, 0) -- draw pacman
-	love.graphics.draw(pacman.sprite, pacman.x, pacman.y, pacman.angle, block/360, block/360)
-
-	for i = 1, lives, 1 do -- draw lives on the bottom left
-		love.graphics.draw(r, 65 * (i - 1) + 25, bottomBar.y + 2 * block, 0, (2 * block)/360, (2 * block)/360)
+	if startScreen then
+		love.graphics.draw(mainMenu, 0, 0)
+		if anyMovement() then 
+			startScreen = false
+			love.window.setMode(screenDimX, screenDimY)
+		end
+		gameStart = os.time()
+	else
+		drawUpdate()
 	end
-
-	for item, v in pairs(rectangles) do -- draw walls
-		love.graphics.setColor(0, 0, 255)
-		if item == "bgate" then love.graphics.setColor(169,169,169) end
-		love.graphics.rectangle('fill', v.x, v.y, v.width, v.height)
-	end
-
-	love.graphics.setColor(255, 255, 255) 
-	for _, circle in pairs(allDots) do -- draw dots
-		love.graphics.circle('fill', circle.x, circle.y, circle.radius)
-	end
-
-	-- draw ghosts
-	drawGhosts()
-
-	-- draw score
-	love.graphics.setColor(255, 0, 0) 
-	love.graphics.print("GAME SCORE", (screenDimX / 2) - 4 * block - 5, bottomBar.y + 2 * block)
-	love.graphics.print(tostring(score), (screenDimX / 2) - block - 3, bottomBar.y + 3 * block)
-	love.graphics.print("HIGH SCORE", screenDimX - 9 * block, bottomBar.y + 2 * block)
-	love.graphics.print(tostring(highScore), screenDimX - 6 * block, bottomBar.y + 3 * block)
-
-	winChecker()
-	drawDead()
 end
