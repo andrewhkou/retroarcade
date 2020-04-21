@@ -45,7 +45,7 @@ r = love.graphics.newImage("images/8bit_right.jpg")
 u = love.graphics.newImage("images/8bit_up.jpg")
 d = love.graphics.newImage("images/8bit_down.jpg")
 scaredPic = love.graphics.newImage("images/scaredGhost.jpg")
-scaredPicWhite = love.graphics.newImage("images/whiteGHost.jpg") -- flashing ghost when timer is about to end
+scaredPicWhite = love.graphics.newImage("images/whiteGhost.jpg") -- flashing ghost when timer is about to end
 mainMenu = love.graphics.newImage("images/pacmanHome.png")
 gameOver = love.graphics.newImage("images/gameOver.png")
 
