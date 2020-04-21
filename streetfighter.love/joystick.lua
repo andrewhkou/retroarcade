@@ -21,67 +21,67 @@ bButton = 2;
 aButton = 1;
 
 function startPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, startButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, startButton);
 end
 
 function startPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, startButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, startButton);
 end
 
 function selectPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, enterButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, enterButton);
 end
 
 function selectPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, enterButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, enterButton);
 end
 
 function lbPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, lbButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, lbButton);
 end
 
 function lbPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, lbButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, lbButton);
 end
 
 function xPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, xButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, xButton);
 end
 
 function xPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, xButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, xButton);
 end
 
 function rbPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, rbButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, rbButton);
 end
 
 function rbPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, rbButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, rbButton);
 end
 
 function yPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, yButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, yButton);
 end
 
 function yPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, yButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, yButton);
 end
 
 function bPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, bButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, bButton);
 end
 
 function bPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, bButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, bButton);
 end
 
 function aPressed1()
-    return (not onComputer) and joystick1.gamepadpressed(joystick1, aButton);
+    return (not onComputer) and love.gamepadpressed(joystick1, aButton);
 end
 
 function aPressed2()
-    return (not onComputer) and joystick2.gamepadpressed(joystick2, aButton);
+    return (not onComputer) and love.gamepadpressed(joystick2, aButton);
 end
 
 function joystick1Up()
