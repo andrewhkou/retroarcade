@@ -2,7 +2,7 @@ local fighter = require "fighter"
 local fight = require "fight"
 require "joystick"
 
-onComputer = false
+onComputer = true
 
 screenDimX = 1920;
 screenDimY = 1200;
@@ -82,6 +82,32 @@ function newGame()
 end
 
 function love.update(dt)
+    if displayHelp then
+        if selectPressed1() then
+            displayHelp = false
+        end
+    elseif mainMenu then 
+        if mainMenuPlay then
+            if selectPressed1() then
+                mainMenu = false
+                isGoing = true
+            end
+        elseif mainMenuHelp then
+            if selectPressed1() then
+                displayHelp = true
+            end
+        elseif not isGoing then
+            if selectPressed1() then
+                newGame()
+            end
+        end
+    elseif mainMenu and notDisplayHelp and joystick1Right() then
+        mainMenuHelp = true
+        mainMenuPlay = false
+    elseif mainMenu and notDisplayHelp and joystick1Left() then
+        mainMenuHelp = false
+        mainMenuPlay = true
+    end
     if not mainMenu then
         if isGoing then
             fighter1:checkCollisionRight(fighter2)
@@ -169,33 +195,6 @@ function updateFighters()
     fighter1:update()
     fighter2:update()
     updateJoysticks()
-
-    if displayHelp then
-        if selectPressed1() then
-            displayHelp = false
-        end
-    elseif mainMenu then 
-        if mainMenuPlay then
-            if selectPressed1() then
-                mainMenu = false
-                isGoing = true
-            end
-        elseif mainMenuHelp then
-            if selectPressed1() then
-                displayHelp = true
-            end
-        elseif not isGoing then
-            if selectPressed1() then
-                newGame()
-            end
-        end
-    elseif mainMenu and notDisplayHelp and joystick1Right() then
-        mainMenuHelp = true
-        mainMenuPlay = false
-    elseif mainMenu and notDisplayHelp and joystick1Left() then
-        mainMenuHelp = false
-        mainMenuPlay = true
-    end
 end
 
 
