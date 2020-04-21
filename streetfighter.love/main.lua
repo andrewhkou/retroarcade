@@ -9,24 +9,24 @@ screenDimY = 1200;
 local keymap1 = {up="w",down="s",left="a",right="d",punch="g"}
 local keymap2 = {up="up",down="down",left="left",right="right",punch=";"}
 
-player1Stance1right = love.graphics.newImage("ryanstance1.png")
-player1Stance2right = love.graphics.newImage("ryanstance2.png")
-player1Punchright = love.graphics.newImage("ryanpunch.png")
-player1Stance1left = love.graphics.newImage("ryanstance1left.png")
-player1Stance2left = love.graphics.newImage("ryanstance2left.png")
-player1Punchleft = love.graphics.newImage("ryan1punchleft.png")
+player1Stance1right = love.graphics.newImage("ryanstance1.jpg")
+player1Stance2right = love.graphics.newImage("ryanstance2.jpg")
+player1Punchright = love.graphics.newImage("ryanpunch.jpg")
+player1Stance1left = love.graphics.newImage("ryanstance1left.jpg")
+player1Stance2left = love.graphics.newImage("ryanstance2left.jpg")
+player1Punchleft = love.graphics.newImage("ryan1punchleft.jpg")
 
-player2Stance1right = love.graphics.newImage("alexstance1right.png")
-player2Stance2right = love.graphics.newImage("alexstance2right.png")
-player2Punchright = love.graphics.newImage("alexpunchright.png")
-player2Stance1left = love.graphics.newImage("alexstance1left.png")
-player2Stance2left = love.graphics.newImage("alexstance2left.png")
-player2Punchleft = love.graphics.newImage("alexpunchleft.png")
+player2Stance1right = love.graphics.newImage("alexstance1right.jpg")
+player2Stance2right = love.graphics.newImage("alexstance2right.jpg")
+player2Punchright = love.graphics.newImage("alexpunchright.jpg")
+player2Stance1left = love.graphics.newImage("alexstance1left.jpg")
+player2Stance2left = love.graphics.newImage("alexstance2left.jpg")
+player2Punchleft = love.graphics.newImage("alexpunchleft.jpg")
 
-homescreen = love.graphics.newImage("streetfighterhome.png")
-helpscreen = love.graphics.newImage("streetfighterhelp.png")
-background = love.graphics.newImage("background.png")
-gameover = love.graphics.newImage("gameover.png")
+homescreen = love.graphics.newImage("streetfighterhome.jpg")
+helpscreen = love.graphics.newImage("streetfighterhelp.jpg")
+background = love.graphics.newImage("background.jpg")
+gameover = love.graphics.newImage("gameover.jpg")
 
 player1Anims = {
     stance1right = player1Stance1right,
