@@ -217,7 +217,7 @@ function Fighter:animate(dt)
         love.graphics.print("-" .. self.healthLost, self.x + self.width/2, self.y - 110)
     end
     if self.player == 1 then
-        scale = 0.19
+        scale = 1
         moveLeft = 140
         moveUp = 70
         if self.punch then
@@ -248,7 +248,7 @@ function Fighter:animate(dt)
     else
         moveUp = 80
         moveLeft = 200
-        scale = 0.17
+        scale = 1
         if self.punch then
             if self.direction == "right" then
                 love.graphics.draw(self.animations.punchright, self.x-moveLeft, self.y-moveUp, 0, scale, scale)
@@ -275,5 +275,5 @@ function Fighter:animate(dt)
             end
         end
     end
-    -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end

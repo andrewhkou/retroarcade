@@ -2,7 +2,7 @@ local fighter = require "fighter"
 local fight = require "fight"
 require "joystick"
 
-onComputer = true;
+onComputer = false;
 totalTimeElapsed = 0;
 screenDimX = 1920;
 screenDimY = 1200;

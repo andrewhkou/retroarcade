@@ -1,4 +1,4 @@
-onComputer = true;
+onComputer = false;
 screenDimX = 1920;
 screenDimY = 1200;
 totalTimeElapsed = 0;
