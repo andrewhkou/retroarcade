@@ -78,24 +78,24 @@ function Fighter:checkCollisionRight(player2)
 end
 
 function Fighter:walkRightAction()
-    if not self.collisionRight then
+    --if not self.collisionRight then
         if self.x >= (self.screenDimX - self.width) then
             self.x = self.screenDimX - self.width
         elseif self.x < (self.screenDimX - self.width) then
             self.x = self.x + 10
         end
-    end
+    --end
     self.direction = 'right'
 end
 
 function Fighter:walkLeftAction()
-    if not self.collisionLeft then
+    --if not self.collisionLeft then
         if self.x <= 0 then
             self.x = 0
         elseif self.x > 0 then
             self.x = self.x - 10
         end
-    end
+    --end
     self.direction = 'left'
 end
 
