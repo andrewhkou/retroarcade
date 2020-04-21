@@ -1,5 +1,10 @@
 Fighter = {}
 
+function love.lowmemory()
+    cachetable = {}
+    collectgarbage()
+end
+
 function Fighter.new(name, x, y, keyMap, direction, screenDimX, regHeight, animations, player, screenDimX, joystickLeft, joystickRight, joystickUp, joystickDown)
     local f = {}
     f.name = name
@@ -275,5 +280,5 @@ function Fighter:animate(dt)
             end
         end
     end
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    -- love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end

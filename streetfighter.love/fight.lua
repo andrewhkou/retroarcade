@@ -1,5 +1,10 @@
 Fight = {}
 
+function love.lowmemory()
+    cachetable = {}
+    collectgarbage()
+end
+
 function Fight.new(player1, player2)
     local o = {}
     o.player1 = player1

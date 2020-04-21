@@ -82,6 +82,11 @@ function newGame()
     isGoing = false
 end
 
+function love.lowmemory()
+    cachetable = {}
+    collectgarbage()
+end
+
 function love.update(dt)
     totalTimeElapsed = totalTimeElapsed + dt;
     if (totalTimeElapsed > 2 * timeLimit) then
