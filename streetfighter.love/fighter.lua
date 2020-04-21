@@ -198,6 +198,13 @@ function Fighter:update(dt)
     self:animate(currentTime)
 end
 
+function Fighter:gamepadpressed(button)
+    if button == 5 and self.punchCounter == 0 and not self.punch then
+        self.punch = true
+        self.punchCounter = 10;
+    end
+end
+
 function Fighter:keypressed(key, unicode)
     if key == self.keyMap['punch'] and self.punchCounter == 0 and not self.punch then
         self.punch = true
@@ -215,7 +222,7 @@ function Fighter:animate(dt)
         moveUp = 70
         if self.punch then
             if self.direction == "right" then
-                love.graphics.draw(self.animations.punchright, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
+                graphics.draw(self.animations.punchright, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
             else
                 love.graphics.draw(self.animations.punchleft, self.x-moveLeft, self.y - moveUp, 0, scale, scale)
             end

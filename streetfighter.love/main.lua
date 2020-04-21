@@ -127,6 +127,31 @@ function love.update(dt)
     end
 end
 
+function love.gamepadpressed(joystick, button)
+    fighter1:gamepadpressed(button)
+    fighter2:gamepadpressed(button)
+    if button == 1 then
+        if displayHelp then
+            displayHelp = false
+        elseif mainMenu then
+            if mainMenuPlay then
+                mainMenu = false
+                isGoing = true
+            elseif mainMenuHelp then
+                displayHelp = true
+            end
+        elseif not isGoing then
+            newGame()
+        end
+    elseif player1right() and mainMenu and not DisplayHelp then
+        mainMenuHelp = true
+        mainMenuPlay = false
+    elseif player1left() and mainMenu and not DisplayHelp then
+        mainMenuHelp = false
+        mainMenuPlay = true
+    end
+end
+
 function love.keypressed(key, unicode)
     fighter1:keypressed(key)
     fighter2:keypressed(key)
